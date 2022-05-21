@@ -1,0 +1,41 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.hust.datn",
+      "nativeLanguage": "en"
+    },
+    "jhipsterVersion": "6.10.1",
+    "applicationType": "monolith",
+    "baseName": "bookstoreapp",
+    "packageName": "com.hust.datn",
+    "packageFolder": "com/hust/datn",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "ehcache",
+    "enableHibernateCache": true,
+    "websocket": "spring-websocket",
+    "databaseType": "sql",
+    "devDatabaseType": "mysql",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "N2RiYjlmY2U0Mjk5NzliYzUyZTQ0YWNlNjZmMmU2ZTAyMDM0MTRlN2YwMDNhMjViOGQyYmQyZDdlNGJjOWU5ZWYyZTRjMDYwMTRiZGQyYmY3YzkxZGE1ZWU0MDE5ZGZjODFmNTk1Nzk4ODJhOTVkMzg5YzFkZTFmMTgwMTc3MTA=",
+    "embeddableLaunchScript": false,
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "skipClient": true,
+    "creationTimestamp": 1653132369211,
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": true,
+    "nativeLanguage": "en",
+    "languages": ["en", "vi"],
+    "blueprints": []
+  }
+}
