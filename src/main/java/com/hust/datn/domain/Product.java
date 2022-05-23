@@ -8,39 +8,38 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * A ChatRoom.
+ * A Product.
  */
 @Entity
-@Table(name = "chat_room", schema = "bookstoreapp", catalog = "")
+@Table(name = "product")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class ChatRoom implements Serializable {
+public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String uuid;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     public void setId(Long id) {
         this.id = id;
     }
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ChatRoom)) {
+        if (!(o instanceof Product)) {
             return false;
         }
-        return id != null && id.equals(((ChatRoom) o).id);
+        return id != null && id.equals(((Product) o).id);
     }
 
     @Override
@@ -51,18 +50,8 @@ public class ChatRoom implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "ChatRoom{" +
+        return "Product{" +
             "id=" + getId() +
             "}";
-    }
-
-    @Basic
-    @Column(name = "uuid")
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 }

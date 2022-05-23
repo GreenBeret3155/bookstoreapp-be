@@ -1,2 +1,7 @@
-package com.hust.datn.domain;public class Status {
+package com.hust.datn.domain;
+
+public enum Status {
+    JOIN,
+    MESSAGE,
+    LEAVE
 }
