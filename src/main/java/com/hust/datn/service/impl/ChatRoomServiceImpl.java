@@ -1,5 +1,7 @@
 package com.hust.datn.service.impl;
 
+import com.hust.datn.domain.ChatRoomUser;
+import com.hust.datn.repository.ChatRoomUserRepository;
 import com.hust.datn.service.ChatRoomService;
 import com.hust.datn.domain.ChatRoom;
 import com.hust.datn.repository.ChatRoomRepository;
@@ -28,9 +30,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomMapper chatRoomMapper;
 
-    public ChatRoomServiceImpl(ChatRoomRepository chatRoomRepository, ChatRoomMapper chatRoomMapper) {
+    private final ChatRoomUserRepository chatRoomUserRepository;
+
+    public ChatRoomServiceImpl(ChatRoomRepository chatRoomRepository, ChatRoomMapper chatRoomMapper, ChatRoomUserRepository chatRoomUserRepository) {
         this.chatRoomRepository = chatRoomRepository;
         this.chatRoomMapper = chatRoomMapper;
+        this.chatRoomUserRepository = chatRoomUserRepository;
     }
 
     @Override
@@ -62,5 +67,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public void delete(Long id) {
         log.debug("Request to delete ChatRoom : {}", id);
         chatRoomRepository.deleteById(id);
+    }
+
+    @Override
+    public ChatRoomDTO createRoom(Long userId) {
+        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom());
+        ChatRoomUser chatRoomUser = chatRoomUserRepository.save(new ChatRoomUser(chatRoom.getId(),userId));
+        return chatRoomMapper.toDto(chatRoom);
     }
 }

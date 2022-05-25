@@ -55,6 +55,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
             @Override
             public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+                System.out.println("STOMP Received:1");
                 if (request instanceof ServletServerHttpRequest) {
                     ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
                     attributes.put(IP_ADDRESS, servletRequest.getRemoteAddress());
@@ -64,7 +65,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
             @Override
             public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-
+                System.out.println("STOMP Received:2");
             }
         };
     }

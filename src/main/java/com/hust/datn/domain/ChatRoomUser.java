@@ -74,4 +74,12 @@ public class ChatRoomUser implements Serializable {
             "id=" + getId() +
             "}";
     }
+
+    public ChatRoomUser() {
+    }
+
+    public ChatRoomUser(Long chatRoomId, Long userId) {
+        this.chatRoomId = chatRoomId;
+        this.userId = userId;
+    }
 }

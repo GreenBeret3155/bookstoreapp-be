@@ -22,14 +22,22 @@ public class ChatRoom implements Serializable {
     private Long id;
     private String uuid;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Basic
+    @Column(name = "uuid")
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     @Override
@@ -54,15 +62,5 @@ public class ChatRoom implements Serializable {
         return "ChatRoom{" +
             "id=" + getId() +
             "}";
-    }
-
-    @Basic
-    @Column(name = "uuid")
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 }
