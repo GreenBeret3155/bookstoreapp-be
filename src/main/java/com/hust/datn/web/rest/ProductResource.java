@@ -89,7 +89,7 @@ public class ProductResource {
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of products in body.
      */
-    @GetMapping("/products")
+    @GetMapping("/get-products")
     public ResponseEntity<List<ProductDTO>> getAllProducts(Pageable pageable) {
         log.debug("REST request to get a page of Products");
         Page<ProductDTO> page = productService.findAll(pageable);
@@ -103,7 +103,7 @@ public class ProductResource {
      * @param id the id of the productDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the productDTO, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/products/{id}")
+    @GetMapping("/get-products/{id}")
     public ResponseEntity<ProductDTO> getProduct(@PathVariable Long id) {
         log.debug("REST request to get Product : {}", id);
         Optional<ProductDTO> productDTO = productService.findOne(id);

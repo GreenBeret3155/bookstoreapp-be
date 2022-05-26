@@ -20,8 +20,10 @@ public class Category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long sourceId;
+    private String name;
+    private Integer isLeaf;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
     }
@@ -29,7 +31,6 @@ public class Category implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {
@@ -53,5 +54,35 @@ public class Category implements Serializable {
         return "Category{" +
             "id=" + getId() +
             "}";
+    }
+
+    @Basic
+    @Column(name = "source_id")
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    @Basic
+    @Column(name = "name")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Basic
+    @Column(name = "is_leaf")
+    public Integer getIsLeaf() {
+        return isLeaf;
+    }
+
+    public void setIsLeaf(Integer isLeaf) {
+        this.isLeaf = isLeaf;
     }
 }

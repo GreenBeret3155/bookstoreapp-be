@@ -6,16 +6,42 @@ import java.io.Serializable;
  * A DTO for the {@link com.hust.datn.domain.Category} entity.
  */
 public class CategoryDTO implements Serializable {
-    
-    private Long id;
 
-    
+    private Long id;
+    private Long sourceId;
+    private String name;
+    private Integer isLeaf;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getIsLeaf() {
+        return isLeaf;
+    }
+
+    public void setIsLeaf(Integer isLeaf) {
+        this.isLeaf = isLeaf;
     }
 
     @Override

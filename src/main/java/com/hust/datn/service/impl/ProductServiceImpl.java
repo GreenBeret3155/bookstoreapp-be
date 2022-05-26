@@ -5,9 +5,11 @@ import com.hust.datn.domain.Product;
 import com.hust.datn.repository.ProductRepository;
 import com.hust.datn.service.dto.ProductDTO;
 import com.hust.datn.service.mapper.ProductMapper;
+import com.hust.datn.service.mapper.custom.ProductCustomMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,9 +30,12 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductMapper productMapper;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
+    private final ProductCustomMapper productCustomMapper;
+
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, ProductCustomMapper productCustomMapper) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.productCustomMapper = productCustomMapper;
     }
 
     @Override
@@ -46,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Products");
         return productRepository.findAll(pageable)
-            .map(productMapper::toDto);
+            .map(productCustomMapper::productToProductDTO);
     }
 
 
@@ -55,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
     public Optional<ProductDTO> findOne(Long id) {
         log.debug("Request to get Product : {}", id);
         return productRepository.findById(id)
-            .map(productMapper::toDto);
+            .map(productCustomMapper::productToProductDTO);
     }
 
     @Override
