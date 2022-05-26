@@ -43,4 +43,11 @@ public interface ChatRoomService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    /**
+     *
+     * @param userId
+     * @return
+     */
+    ChatRoomDTO createRoom(Long userId);
 }

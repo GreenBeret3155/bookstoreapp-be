@@ -7,6 +7,7 @@ import javax.persistence.*;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 /**
  * A ChatMessage.
@@ -21,11 +22,11 @@ public class ChatMessage implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer chatRoomId;
-    private Integer senderId;
+    private Long chatRoomId;
+    private Long senderId;
     private Integer contentType;
     private String content;
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
@@ -62,21 +63,21 @@ public class ChatMessage implements Serializable {
 
     @Basic
     @Column(name = "chat_room_id")
-    public Integer getChatRoomId() {
+    public Long getChatRoomId() {
         return chatRoomId;
     }
 
-    public void setChatRoomId(Integer chatRoomId) {
+    public void setChatRoomId(Long chatRoomId) {
         this.chatRoomId = chatRoomId;
     }
 
     @Basic
     @Column(name = "sender_id")
-    public Integer getSenderId() {
+    public Long getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(Integer senderId) {
+    public void setSenderId(Long senderId) {
         this.senderId = senderId;
     }
 
@@ -102,11 +103,11 @@ public class ChatMessage implements Serializable {
 
     @Basic
     @Column(name = "created_at")
-    public Timestamp getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }

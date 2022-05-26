@@ -1,11 +1,15 @@
 package com.hust.datn.security;
 
+import com.hust.datn.config.Constants;
+import com.hust.datn.domain.User;
+import com.hust.datn.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -80,6 +84,21 @@ public final class SecurityUtils {
     private static Stream<String> getAuthorities(Authentication authentication) {
         return authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority);
+    }
+
+    public static Optional<Long> getCurrentUserId(UserRepository userRepository) {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        if (securityContext.getAuthentication().getPrincipal() instanceof String)
+            return Optional.empty();
+
+        UserDetails userDetails = (UserDetails) securityContext.getAuthentication().getPrincipal();
+        String lowercaseLogin = userDetails.getUsername().toLowerCase(Locale.ENGLISH);
+        Optional<User> user =  userRepository.findOneByLogin(lowercaseLogin);
+        if (user.isPresent()) {
+            if (user.get().getActivated() && !Constants.ANONYMOUS_USER.equals(user.get().getLogin()))
+                return Optional.of(user.get().getId());
+        }
+        return Optional.empty();
     }
 
 }

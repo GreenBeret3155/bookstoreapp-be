@@ -2,6 +2,7 @@ package com.hust.datn.service.dto;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 /**
  * A DTO for the {@link com.hust.datn.domain.ChatMessage} entity.
@@ -9,11 +10,11 @@ import java.sql.Timestamp;
 public class ChatMessageDTO implements Serializable {
 
     private Long id;
-    private Integer chatRoomId;
-    private Integer senderId;
+    private Long chatRoomId;
+    private Long senderId;
     private Integer contentType;
     private String content;
-    private Timestamp createdAt;
+    private Instant createdAt;
 
     public Long getId() {
         return id;
@@ -23,19 +24,19 @@ public class ChatMessageDTO implements Serializable {
         this.id = id;
     }
 
-    public Integer getChatRoomId() {
+    public Long getChatRoomId() {
         return chatRoomId;
     }
 
-    public void setChatRoomId(Integer chatRoomId) {
+    public void setChatRoomId(Long chatRoomId) {
         this.chatRoomId = chatRoomId;
     }
 
-    public Integer getSenderId() {
+    public Long getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(Integer senderId) {
+    public void setSenderId(Long senderId) {
         this.senderId = senderId;
     }
 
@@ -55,11 +56,11 @@ public class ChatMessageDTO implements Serializable {
         this.content = content;
     }
 
-    public Timestamp getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 

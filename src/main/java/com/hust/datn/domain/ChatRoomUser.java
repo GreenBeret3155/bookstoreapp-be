@@ -8,19 +8,20 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * A ChatRoom.
+ * A ChatRoomUser.
  */
 @Entity
-@Table(name = "chat_room", schema = "bookstoreapp", catalog = "")
+@Table(name = "chat_room_user", schema = "bookstoreapp", catalog = "")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class ChatRoom implements Serializable {
+public class ChatRoomUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String uuid;
+    private Long chatRoomId;
+    private Long userId;
 
     public Long getId() {
         return id;
@@ -31,13 +32,23 @@ public class ChatRoom implements Serializable {
     }
 
     @Basic
-    @Column(name = "uuid")
-    public String getUuid() {
-        return uuid;
+    @Column(name = "chat_room_id")
+    public Long getChatRoomId() {
+        return chatRoomId;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setChatRoomId(Long chatRoomId) {
+        this.chatRoomId = chatRoomId;
+    }
+
+    @Basic
+    @Column(name = "user_id")
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     @Override
@@ -45,10 +56,10 @@ public class ChatRoom implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ChatRoom)) {
+        if (!(o instanceof ChatRoomUser)) {
             return false;
         }
-        return id != null && id.equals(((ChatRoom) o).id);
+        return id != null && id.equals(((ChatRoomUser) o).id);
     }
 
     @Override
@@ -59,8 +70,16 @@ public class ChatRoom implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "ChatRoom{" +
+        return "ChatRoomUser{" +
             "id=" + getId() +
             "}";
+    }
+
+    public ChatRoomUser() {
+    }
+
+    public ChatRoomUser(Long chatRoomId, Long userId) {
+        this.chatRoomId = chatRoomId;
+        this.userId = userId;
     }
 }
