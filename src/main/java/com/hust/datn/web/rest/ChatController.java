@@ -88,6 +88,6 @@ public class ChatController {
         ChatMessageDTO saved = chatMessageService.save(chatMessageDTO);
         saved.setId(null);
 
-        simpMessagingTemplate.convertAndSendToUser("1","/queue/messages",saved);
+        simpMessagingTemplate.convertAndSendToUser(String.valueOf(chatMessageDTO.getSenderId()),"/queue/messages",saved);
     }
 }
