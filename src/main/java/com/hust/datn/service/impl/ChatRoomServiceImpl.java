@@ -72,7 +72,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public ChatRoomDTO createRoom(Long userId) {
         ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom());
-        ChatRoomUser chatRoomUser = chatRoomUserRepository.save(new ChatRoomUser(chatRoom.getId(),userId));
+        chatRoomUserRepository.save(new ChatRoomUser(chatRoom.getId(),userId));
         return chatRoomMapper.toDto(chatRoom);
     }
 }
