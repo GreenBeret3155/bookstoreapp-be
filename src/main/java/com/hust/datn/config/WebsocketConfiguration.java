@@ -5,6 +5,9 @@ import com.hust.datn.security.AuthoritiesConstants;
 import java.security.Principal;
 import java.util.*;
 
+import com.hust.datn.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.*;
@@ -26,6 +29,8 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     private final JHipsterProperties jHipsterProperties;
 
+    private final Logger log = LoggerFactory.getLogger(WebsocketConfiguration.class);
+
     public WebsocketConfiguration(JHipsterProperties jHipsterProperties) {
         this.jHipsterProperties = jHipsterProperties;
     }
@@ -42,6 +47,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         String[] allowedOrigins = Optional.ofNullable(jHipsterProperties.getCors().getAllowedOrigins()).map(origins -> origins.toArray(new String[0])).orElse(new String[0]);
         //to connect with server
+        log.info(allowedOrigins.toString());
         registry.addEndpoint("/ws")
             .setHandshakeHandler(defaultHandshakeHandler())
             .setAllowedOrigins(allowedOrigins)

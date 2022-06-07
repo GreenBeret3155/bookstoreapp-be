@@ -48,6 +48,8 @@ public class UserDTO {
 
     private Instant lastModifiedDate;
 
+    private String avatar;
+
     private Set<String> authorities;
 
     public UserDTO() {
@@ -166,6 +168,14 @@ public class UserDTO {
 
     public void setLastModifiedDate(Instant lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public Set<String> getAuthorities() {
