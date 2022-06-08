@@ -163,3 +163,8 @@ jhipster:
 # ===================================================================
 
 # application:
+elasticsearch:
+  hosts: 10.60.158.25:9200
+  user: user
+  pass: pass
+  clustername: sync_product_2
