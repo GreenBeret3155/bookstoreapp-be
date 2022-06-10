@@ -12,6 +12,13 @@ public final class Constants {
     public static final String DEFAULT_LANGUAGE = "en";
     public static final String ANONYMOUS_USER = "anonymous";
 
+    public interface ES {
+        String BASE_RPT_GRAPH = "base-rpt-graph";
+        String OBJ_RPT_GRAPH = "obj-rpt-graph";
+        String TYPE = "_doc";
+        String PRODUCT_INDEX = "sync_product_2";
+    }
+
     private Constants() {
     }
 }
