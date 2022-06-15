@@ -50,7 +50,7 @@ public class ProductSearchResource {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ProductSearchDTO>> exportReportKpi(@RequestParam String q) throws Exception {
+    public ResponseEntity<List<ProductSearchDTO>> onSearchObject(@RequestParam String q) throws Exception {
         List<ProductSearchDTO> lstData = productSearchService.onSearchObject(q);
 
         return ResponseEntity.ok().body(lstData);

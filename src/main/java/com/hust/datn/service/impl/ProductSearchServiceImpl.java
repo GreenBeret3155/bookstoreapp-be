@@ -48,7 +48,7 @@ public class ProductSearchServiceImpl implements ProductSearchService {
     public List<ProductSearchDTO> onSearchObject(String keyword) throws Exception {
         List<ProductSearchDTO> lstObj = new ArrayList<>();
 
-        QueryBuilder matchQueryBuilder = QueryBuilders.multiMatchQuery("name", keyword);
+        QueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("name", keyword);
 
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         sourceBuilder.query(matchQueryBuilder);
