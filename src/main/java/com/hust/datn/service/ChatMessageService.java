@@ -26,7 +26,7 @@ public interface ChatMessageService {
      * @param pageable the pagination information.
      * @return the list of entities.
      */
-    Page<ChatMessageDTO> findAll(Pageable pageable);
+    Page<ChatMessageDTO> findMessageByRoom(Long roomId, Pageable pageable);
 
 
     /**

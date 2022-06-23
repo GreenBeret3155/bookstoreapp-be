@@ -43,9 +43,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ChatMessageDTO> findAll(Pageable pageable) {
-        log.debug("Request to get all ChatMessages");
-        return chatMessageRepository.findAll(pageable)
+    public Page<ChatMessageDTO> findMessageByRoom(Long roomId, Pageable pageable) {
+        return chatMessageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(roomId, pageable)
             .map(chatMessageMapper::toDto);
     }
 

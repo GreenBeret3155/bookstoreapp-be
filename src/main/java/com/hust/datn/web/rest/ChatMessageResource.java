@@ -89,13 +89,13 @@ public class ChatMessageResource {
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of chatMessages in body.
      */
-    @GetMapping("/chat-messages")
-    public ResponseEntity<List<ChatMessageDTO>> getAllChatMessages(Pageable pageable) {
-        log.debug("REST request to get a page of ChatMessages");
-        Page<ChatMessageDTO> page = chatMessageService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
+//    @GetMapping("/chat-messages")
+//    public ResponseEntity<List<ChatMessageDTO>> getAllChatMessages(Pageable pageable) {
+//        log.debug("REST request to get a page of ChatMessages");
+//        Page<ChatMessageDTO> page = chatMessageService.findAll(pageable);
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+//        return ResponseEntity.ok().headers(headers).body(page.getContent());
+//    }
 
     /**
      * {@code GET  /chat-messages/:id} : get the "id" chatMessage.

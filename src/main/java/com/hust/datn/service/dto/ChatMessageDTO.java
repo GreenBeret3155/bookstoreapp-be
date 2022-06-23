@@ -1,5 +1,7 @@
 package com.hust.datn.service.dto;
 
+import com.hust.datn.domain.ChatBotReceiveMessage;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -61,6 +63,17 @@ public class ChatMessageDTO implements Serializable {
     }
 
     public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public ChatMessageDTO() {
+    }
+
+    public ChatMessageDTO(ChatBotReceiveMessage chatBotReceiveMessage, Long chatRoomId, Instant createdAt) {
+        this.chatRoomId = chatRoomId;
+        this.senderId = -99L;
+        this.contentType = 1;
+        this.content = chatBotReceiveMessage.getText();
         this.createdAt = createdAt;
     }
 

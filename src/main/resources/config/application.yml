@@ -168,3 +168,7 @@ elasticsearch:
   user: user
   pass: pass
   clustername: sync_product_2
+
+botchat:
+  baseurl: http://localhost:5005
+  webhook: /webhooks/rest/webhook
