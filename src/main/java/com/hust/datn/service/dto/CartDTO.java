@@ -6,16 +6,24 @@ import java.io.Serializable;
  * A DTO for the {@link com.hust.datn.domain.Cart} entity.
  */
 public class CartDTO implements Serializable {
-    
-    private Long id;
 
-    
+    private Long id;
+    private Integer userId;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     @Override

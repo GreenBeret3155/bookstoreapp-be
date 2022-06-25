@@ -11,7 +11,7 @@ import java.io.Serializable;
  * A CartItem.
  */
 @Entity
-@Table(name = "cart_item")
+@Table(name = "cart_item", schema = "bookstoreapp", catalog = "")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CartItem implements Serializable {
 
@@ -20,6 +20,10 @@ public class CartItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Integer cartId;
+    private Integer productId;
+    private Integer quantity;
+    private Integer isSelected;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
@@ -29,7 +33,6 @@ public class CartItem implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {
@@ -53,5 +56,45 @@ public class CartItem implements Serializable {
         return "CartItem{" +
             "id=" + getId() +
             "}";
+    }
+
+    @Basic
+    @Column(name = "cart_id")
+    public Integer getCartId() {
+        return cartId;
+    }
+
+    public void setCartId(Integer cartId) {
+        this.cartId = cartId;
+    }
+
+    @Basic
+    @Column(name = "product_id")
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
+
+    @Basic
+    @Column(name = "quantity")
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    @Basic
+    @Column(name = "is_selected")
+    public Integer getIsSelected() {
+        return isSelected;
+    }
+
+    public void setIsSelected(Integer isSelected) {
+        this.isSelected = isSelected;
     }
 }

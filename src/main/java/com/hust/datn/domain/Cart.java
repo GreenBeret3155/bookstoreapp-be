@@ -20,6 +20,8 @@ public class Cart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Integer userId;
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
@@ -29,7 +31,6 @@ public class Cart implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
     public boolean equals(Object o) {
@@ -53,5 +54,15 @@ public class Cart implements Serializable {
         return "Cart{" +
             "id=" + getId() +
             "}";
+    }
+
+    @Basic
+    @Column(name = "user_id")
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 }
