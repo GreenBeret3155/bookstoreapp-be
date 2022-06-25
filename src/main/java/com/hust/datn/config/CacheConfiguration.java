@@ -55,6 +55,8 @@ public class CacheConfiguration {
             createCache(cm, com.hust.datn.domain.Category.class.getName());
             createCache(cm, com.hust.datn.domain.ChatRoomUser.class.getName());
             createCache(cm, com.hust.datn.domain.ProductSearch.class.getName());
+            createCache(cm, com.hust.datn.domain.Cart.class.getName());
+            createCache(cm, com.hust.datn.domain.CartItem.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

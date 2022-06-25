@@ -21,6 +21,8 @@
     <include file="config/liquibase/changelog/20220523203725_added_entity_Category.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20220524152454_added_entity_ChatRoomUser.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20220609012633_added_entity_ProductSearch.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220625041727_added_entity_Cart.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20220625041753_added_entity_CartItem.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
