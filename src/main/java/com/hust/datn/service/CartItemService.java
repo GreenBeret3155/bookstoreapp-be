@@ -5,6 +5,7 @@ import com.hust.datn.service.dto.CartItemDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -19,6 +20,22 @@ public interface CartItemService {
      * @return the persisted entity.
      */
     CartItemDTO save(CartItemDTO cartItemDTO);
+
+    /**
+     * Save cartItems.
+     *
+     * @param cartItemDTOs the entity to save.
+     * @return the persisted entity.
+     */
+    List<CartItemDTO> saveCartItems(List<CartItemDTO> cartItemDTOs);
+
+    /**
+     * Get all the cartItems by cartId.
+     *
+     * @param cartId .
+     * @return the list of entities.
+     */
+    List<CartItemDTO> findAllByCartId(Long cartId);
 
     /**
      * Get all the cartItems.

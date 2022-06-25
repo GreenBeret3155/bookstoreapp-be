@@ -1,14 +1,19 @@
 package com.hust.datn.web.rest;
 
+import com.hust.datn.repository.UserRepository;
+import com.hust.datn.security.SecurityUtils;
+import com.hust.datn.service.CartItemService;
 import com.hust.datn.service.CartService;
+import com.hust.datn.service.ProductService;
+import com.hust.datn.service.dto.*;
 import com.hust.datn.web.rest.errors.BadRequestAlertException;
-import com.hust.datn.service.dto.CartDTO;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +25,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing {@link com.hust.datn.domain.Cart}.
@@ -37,6 +44,15 @@ public class CartResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
+    @Autowired
+    private CartItemService cartItemService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private UserRepository userRepository;
+
     private final CartService cartService;
 
     public CartResource(CartService cartService) {
@@ -44,57 +60,68 @@ public class CartResource {
     }
 
     /**
-     * {@code POST  /carts} : Create a new cart.
+     * {@code POST  /carts} : Save (create/update) a cart.
      *
-     * @param cartDTO the cartDTO to create.
+     * @param cartItemDTOS the cartDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new cartDTO, or with status {@code 400 (Bad Request)} if the cart has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/carts")
-    public ResponseEntity<CartDTO> createCart(@RequestBody CartDTO cartDTO) throws URISyntaxException {
-        log.debug("REST request to save Cart : {}", cartDTO);
-        if (cartDTO.getId() != null) {
-            throw new BadRequestAlertException("A new cart cannot already have an ID", ENTITY_NAME, "idexists");
+//    @PostMapping("/cart")
+//    public ResponseEntity<CartDetailsDTO> saveCart(@RequestBody CartDetailsDTO cartDetailsDTO) throws URISyntaxException {
+//        CartDetailsDTO result = new CartDetailsDTO();
+//        List<CartItemDTO> cartItemDTOS = cartItemService.saveCartItems(cartDetailsDTO.getCartItemList());
+//        CartDTO cartDTO =  cartService.findOne(cartDetailsDTO.getCart().getId()).orElse(null);
+//        if(car)
+//
+//        CartDTO result = cartService.save(cartDTO);
+//        return ResponseEntity.created(new URI("/api/carts/" + result.getId()))
+//            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+//            .body(result);
+//    }
+    @PostMapping("/cart")
+    public ResponseEntity<List<?>> saveCart(@RequestBody List<CartItemDTO> cartItemDTOS) throws URISyntaxException {
+        if(cartItemDTOS == null | cartItemDTOS.size() == 0){
+            return ResponseEntity.ok().body(new ArrayList<>());
         }
-        CartDTO result = cartService.save(cartDTO);
-        return ResponseEntity.created(new URI("/api/carts/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
-    }
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
+        CartDTO cartDTO =  cartService.findOneByUserId(userId).orElse(null);
+        if(cartDTO == null){
+            cartDTO = cartService.save(new CartDTO(userId));
+        }
 
-    /**
-     * {@code PUT  /carts} : Updates an existing cart.
-     *
-     * @param cartDTO the cartDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated cartDTO,
-     * or with status {@code 400 (Bad Request)} if the cartDTO is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the cartDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/carts")
-    public ResponseEntity<CartDTO> updateCart(@RequestBody CartDTO cartDTO) throws URISyntaxException {
-        log.debug("REST request to update Cart : {}", cartDTO);
-        if (cartDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        CartDTO result = cartService.save(cartDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, cartDTO.getId().toString()))
-            .body(result);
+        CartDTO finalCartDTO = cartDTO;
+        cartItemDTOS = cartItemDTOS.stream().map(e -> {
+            e.setCartId(finalCartDTO.getId());
+            e.setProductId(e.getId());
+            e.setIsSelected(0);
+            return e;
+        }).collect(Collectors.toList());
+
+        List<CartItemDTO> cartItemDTOSResult = cartItemService.saveCartItems(cartItemDTOS);
+
+        return ResponseEntity.ok().body(cartItemDTOSResult);
     }
 
     /**
      * {@code GET  /carts} : get all the carts.
      *
-     * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of carts in body.
      */
-    @GetMapping("/carts")
-    public ResponseEntity<List<CartDTO>> getAllCarts(Pageable pageable) {
+    @GetMapping("/cart")
+    public ResponseEntity<List<?>> getAllCartItems() {
         log.debug("REST request to get a page of Carts");
-        Page<CartDTO> page = cartService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
+        CartDTO cartDTO =  cartService.findOneByUserId(userId).orElse(null);
+        if(cartDTO == null){
+            return ResponseEntity.ok().body(new ArrayList<>());
+        }
+        List<CartItemDTO> listCartItems = cartItemService.findAllByCartId(cartDTO.getId());
+        List<CartItemDetailDTO> result = new ArrayList<>();
+        listCartItems.forEach(e -> {
+            ProductDTO productDTO = productService.findOne(e.getProductId()).orElse(new ProductDTO());
+            result.add(new CartItemDetailDTO(productDTO, e));
+        });
+        return ResponseEntity.ok().body(result);
     }
 
     /**

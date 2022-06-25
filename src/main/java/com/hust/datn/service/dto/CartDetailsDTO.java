@@ -1,26 +1,19 @@
 package com.hust.datn.service.dto;
 
+import com.hust.datn.domain.CartItem;
+
 import java.util.List;
 
 public class CartDetailsDTO {
-    private Long id;
-    private Integer userId;
+    private CartDTO cart;
     private List<CartItemDTO> cartItemList;
 
-    public Long getId() {
-        return id;
+    public CartDTO getCart() {
+        return cart;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setCart(CartDTO cart) {
+        this.cart = cart;
     }
 
     public List<CartItemDTO> getCartItemList() {

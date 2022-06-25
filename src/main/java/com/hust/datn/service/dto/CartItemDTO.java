@@ -8,8 +8,8 @@ import java.io.Serializable;
 public class CartItemDTO implements Serializable {
 
     private Long id;
-    private Integer cartId;
-    private Integer productId;
+    private Long cartId;
+    private Long productId;
     private Integer quantity;
     private Integer isSelected;
 
@@ -21,19 +21,19 @@ public class CartItemDTO implements Serializable {
         this.id = id;
     }
 
-    public Integer getCartId() {
+    public Long getCartId() {
         return cartId;
     }
 
-    public void setCartId(Integer cartId) {
+    public void setCartId(Long cartId) {
         this.cartId = cartId;
     }
 
-    public Integer getProductId() {
+    public Long getProductId() {
         return productId;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 

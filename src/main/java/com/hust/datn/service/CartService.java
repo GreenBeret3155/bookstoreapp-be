@@ -38,6 +38,14 @@ public interface CartService {
     Optional<CartDTO> findOne(Long id);
 
     /**
+     * Get the "userId" cart.
+     *
+     * @param userId the id of the entity.
+     * @return the entity.
+     */
+    Optional<CartDTO> findOneByUserId(Long userId);
+
+    /**
      * Delete the "id" cart.
      *
      * @param id the id of the entity.

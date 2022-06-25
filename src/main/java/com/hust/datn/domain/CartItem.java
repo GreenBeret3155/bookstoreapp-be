@@ -20,8 +20,8 @@ public class CartItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer cartId;
-    private Integer productId;
+    private Long cartId;
+    private Long productId;
     private Integer quantity;
     private Integer isSelected;
 
@@ -60,21 +60,21 @@ public class CartItem implements Serializable {
 
     @Basic
     @Column(name = "cart_id")
-    public Integer getCartId() {
+    public Long getCartId() {
         return cartId;
     }
 
-    public void setCartId(Integer cartId) {
+    public void setCartId(Long cartId) {
         this.cartId = cartId;
     }
 
     @Basic
     @Column(name = "product_id")
-    public Integer getProductId() {
+    public Long getProductId() {
         return productId;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 

@@ -20,7 +20,7 @@ public class Cart implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer userId;
+    private Long userId;
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -58,11 +58,11 @@ public class Cart implements Serializable {
 
     @Basic
     @Column(name = "user_id")
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }
