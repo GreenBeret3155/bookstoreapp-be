@@ -66,18 +66,6 @@ public class CartResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new cartDTO, or with status {@code 400 (Bad Request)} if the cart has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-//    @PostMapping("/cart")
-//    public ResponseEntity<CartDetailsDTO> saveCart(@RequestBody CartDetailsDTO cartDetailsDTO) throws URISyntaxException {
-//        CartDetailsDTO result = new CartDetailsDTO();
-//        List<CartItemDTO> cartItemDTOS = cartItemService.saveCartItems(cartDetailsDTO.getCartItemList());
-//        CartDTO cartDTO =  cartService.findOne(cartDetailsDTO.getCart().getId()).orElse(null);
-//        if(car)
-//
-//        CartDTO result = cartService.save(cartDTO);
-//        return ResponseEntity.created(new URI("/api/carts/" + result.getId()))
-//            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-//            .body(result);
-//    }
     @PostMapping("/cart")
     public ResponseEntity<List<?>> saveCart(@RequestBody List<CartItemDTO> cartItemDTOS) throws URISyntaxException {
         if(cartItemDTOS == null | cartItemDTOS.size() == 0){
@@ -102,11 +90,6 @@ public class CartResource {
         return ResponseEntity.ok().body(cartItemDTOSResult);
     }
 
-    /**
-     * {@code GET  /carts} : get all the carts.
-     *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of carts in body.
-     */
     @GetMapping("/cart")
     public ResponseEntity<List<?>> getAllCartItems() {
         log.debug("REST request to get a page of Carts");
@@ -122,6 +105,17 @@ public class CartResource {
             result.add(new CartItemDetailDTO(productDTO, e));
         });
         return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/cart/clear")
+    public ResponseEntity<List<?>> clearCart() throws URISyntaxException {
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
+        CartDTO cartDTO =  cartService.findOneByUserId(userId).orElse(null);
+        if(cartDTO == null){
+            return (ResponseEntity<List<?>>) ResponseEntity.notFound();
+        }
+        cartItemService.deleteCartItemsByCartId(cartDTO.getId());
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, cartDTO.getId().toString())).build();
     }
 
     /**

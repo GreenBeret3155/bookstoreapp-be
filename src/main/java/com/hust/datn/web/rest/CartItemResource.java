@@ -109,17 +109,4 @@ public class CartItemResource {
         Optional<CartItemDTO> cartItemDTO = cartItemService.findOne(id);
         return ResponseUtil.wrapOrNotFound(cartItemDTO);
     }
-
-    /**
-     * {@code DELETE  /cart-items/:id} : delete the "id" cartItem.
-     *
-     * @param id the id of the cartItemDTO to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @DeleteMapping("/cart-items/{id}")
-    public ResponseEntity<Void> deleteCartItem(@PathVariable Long id) {
-        log.debug("REST request to delete CartItem : {}", id);
-        cartItemService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
-    }
 }

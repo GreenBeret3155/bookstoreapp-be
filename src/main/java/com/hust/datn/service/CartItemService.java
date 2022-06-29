@@ -59,5 +59,5 @@ public interface CartItemService {
      *
      * @param id the id of the entity.
      */
-    void delete(Long id);
+    void deleteCartItemsByCartId(Long cartId);
 }
