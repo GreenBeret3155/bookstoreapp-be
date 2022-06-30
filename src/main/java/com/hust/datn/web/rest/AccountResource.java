@@ -4,6 +4,7 @@ import com.hust.datn.domain.User;
 import com.hust.datn.repository.UserRepository;
 import com.hust.datn.security.SecurityUtils;
 import com.hust.datn.service.MailService;
+import com.hust.datn.service.SysModuleService;
 import com.hust.datn.service.UserService;
 import com.hust.datn.service.dto.PasswordChangeDTO;
 import com.hust.datn.service.dto.UserDTO;
@@ -14,6 +15,7 @@ import com.hust.datn.web.rest.vm.ManagedUserVM;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +43,9 @@ public class AccountResource {
     private final UserService userService;
 
     private final MailService mailService;
+
+    @Autowired
+    private SysModuleService sysModuleService;
 
     public AccountResource(UserRepository userRepository, UserService userService, MailService mailService) {
 
@@ -101,9 +106,14 @@ public class AccountResource {
      */
     @GetMapping("/account")
     public UserDTO getAccount() {
-        return userService.getUserWithAuthorities()
+        UserDTO userDTO = userService.getUserWithAuthorities()
             .map(UserDTO::new)
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
+        String login = SecurityUtils.getCurrentUserLogin().orElse(null);
+        if(userDTO != null && login != null){
+            userDTO.setModules(sysModuleService.findModuleByLogin(login));
+        }
+        return userDTO;
     }
 
     /**

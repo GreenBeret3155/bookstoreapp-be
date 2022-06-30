@@ -7,6 +7,7 @@ import com.hust.datn.domain.User;
 
 import javax.validation.constraints.*;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,8 @@ public class UserDTO {
     private String avatar;
 
     private Set<String> authorities;
+
+    private List<SysModuleDTO> modules;
 
     public UserDTO() {
         // Empty constructor needed for Jackson.
@@ -184,6 +187,14 @@ public class UserDTO {
 
     public void setAuthorities(Set<String> authorities) {
         this.authorities = authorities;
+    }
+
+    public List<SysModuleDTO> getModules() {
+        return modules;
+    }
+
+    public void setModules(List<SysModuleDTO> modules) {
+        this.modules = modules;
     }
 
     // prettier-ignore
