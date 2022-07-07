@@ -5,6 +5,7 @@ import com.hust.datn.service.dto.OrderInfoDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,12 +22,26 @@ public interface OrderInfoService {
     OrderInfoDTO save(OrderInfoDTO orderInfoDTO);
 
     /**
+     * Reset all states orderInfo.
+     *
+     * @return the persisted entity.
+     */
+    OrderInfoDTO setDefaultOrderInfo(Long defaultOrderInfoId, Long userId);
+
+    /**
      * Get all the orderInfos.
      *
      * @param pageable the pagination information.
      * @return the list of entities.
      */
     Page<OrderInfoDTO> findAll(Pageable pageable);
+
+    /**
+     * Get all the orderInfos.
+     *
+     * @return the list of entities.
+     */
+    List<OrderInfoDTO> findAllOrderInfosByUserId(Long userId);
 
 
     /**

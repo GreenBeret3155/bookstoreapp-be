@@ -110,7 +110,7 @@ public class ChatController {
         ChatMessageDTO saved = chatMessageService.save(chatMessageDTO);
         saved.setId(null);
         simpMessagingTemplate.convertAndSendToUser(String.valueOf(chatMessageDTO.getSenderId()),"/queue/messages",saved);
-        ChatBotReceiveMessage chatBotReceiveMessage =  sentChatToBot(String.valueOf(saved.getSenderId()), saved.getContent());
+        ChatBotReceiveMessage chatBotReceiveMessage =  sentChatToBot(String.valueOf(saved.getChatRoomId()), saved.getContent());
         ChatMessageDTO botResponse = chatMessageService.save(new ChatMessageDTO(chatBotReceiveMessage, chatMessageDTO.getChatRoomId(), Instant.now()));
         botResponse.setId(null);
         simpMessagingTemplate.convertAndSendToUser(String.valueOf(saved.getSenderId()),"/queue/messages",botResponse);

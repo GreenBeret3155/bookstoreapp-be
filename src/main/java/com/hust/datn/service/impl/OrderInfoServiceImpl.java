@@ -5,6 +5,7 @@ import com.hust.datn.domain.OrderInfo;
 import com.hust.datn.repository.OrderInfoRepository;
 import com.hust.datn.service.dto.OrderInfoDTO;
 import com.hust.datn.service.mapper.OrderInfoMapper;
+import com.hust.datn.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing {@link OrderInfo}.
@@ -42,11 +45,24 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     }
 
     @Override
+    public OrderInfoDTO setDefaultOrderInfo(Long defaultOrderInfoId, Long userId) {
+        OrderInfo orderInfo = orderInfoRepository.findById(userId).orElseThrow(() -> new BadRequestAlertException("Not found", "Not found", "Not found"));
+        orderInfoRepository.resetStateAllOrderInfos(userId);
+        orderInfo.setState(1);
+        return orderInfoMapper.toDto(orderInfoRepository.save(orderInfo));
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<OrderInfoDTO> findAll(Pageable pageable) {
         log.debug("Request to get all OrderInfos");
         return orderInfoRepository.findAll(pageable)
             .map(orderInfoMapper::toDto);
+    }
+
+    @Override
+    public List<OrderInfoDTO> findAllOrderInfosByUserId(Long userId) {
+        return orderInfoRepository.findAllByUserId(userId).stream().map(orderInfoMapper::toDto).collect(Collectors.toList());
     }
 
 

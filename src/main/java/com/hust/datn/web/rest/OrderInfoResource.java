@@ -1,5 +1,7 @@
 package com.hust.datn.web.rest;
 
+import com.hust.datn.repository.UserRepository;
+import com.hust.datn.security.SecurityUtils;
 import com.hust.datn.service.OrderInfoService;
 import com.hust.datn.web.rest.errors.BadRequestAlertException;
 import com.hust.datn.service.dto.OrderInfoDTO;
@@ -9,6 +11,7 @@ import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +39,9 @@ public class OrderInfoResource {
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private final OrderInfoService orderInfoService;
 
@@ -81,6 +87,28 @@ public class OrderInfoResource {
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, orderInfoDTO.getId().toString()))
             .body(result);
+    }
+
+    @PostMapping("/default-order-info")
+    public ResponseEntity<OrderInfoDTO> setDefaultOrderInfo(@RequestBody OrderInfoDTO orderInfoDTO) throws URISyntaxException {
+        if (orderInfoDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("Not found", "Not found", "Not found"));
+        OrderInfoDTO result = orderInfoService.setDefaultOrderInfo(orderInfoDTO.getId(), userId);
+        return ResponseEntity.ok().body(result);
+    }
+
+    /**
+     * {@code GET  /order-info} : get all the orderInfo by userId.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of orderInfos in body.
+     */
+    @GetMapping("/order-info")
+    public ResponseEntity<List<OrderInfoDTO>> getAllOrderInfo() {
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("Not found", "Not found", "Not found"));
+        List<OrderInfoDTO> result = orderInfoService.findAllOrderInfosByUserId(userId);
+        return ResponseEntity.ok().body(result);
     }
 
     /**

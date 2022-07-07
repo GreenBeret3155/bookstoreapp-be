@@ -51,6 +51,11 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
         registry.addEndpoint("/ws")
             .setHandshakeHandler(defaultHandshakeHandler())
             .setAllowedOrigins(allowedOrigins)
+            .withSockJS();
+
+        registry.addEndpoint("/tracker")
+            .setHandshakeHandler(defaultHandshakeHandler())
+            .setAllowedOrigins(allowedOrigins)
             .withSockJS()
             .setInterceptors(httpSessionHandshakeInterceptor());
     }
@@ -90,4 +95,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
             }
         };
     }
+//
+//    @Bean
+//    public Discon
 }
