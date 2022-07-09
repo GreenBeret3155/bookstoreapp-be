@@ -23,6 +23,8 @@ public class OrderItem implements Serializable {
     private Long orderId;
     private Integer quantity;
     private Long productId;
+    private String name;
+    private Double totalPrice;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
@@ -85,5 +87,25 @@ public class OrderItem implements Serializable {
 
     public void setProductId(Long productId) {
         this.productId = productId;
+    }
+
+    @Basic
+    @Column(name = "name")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Basic
+    @Column(name = "totalPrice")
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

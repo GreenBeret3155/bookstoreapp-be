@@ -1,14 +1,17 @@
 package com.hust.datn.web.rest;
 
-import com.hust.datn.service.CustOrderService;
+import com.hust.datn.repository.UserRepository;
+import com.hust.datn.security.SecurityUtils;
+import com.hust.datn.service.*;
+import com.hust.datn.service.dto.*;
 import com.hust.datn.web.rest.errors.BadRequestAlertException;
-import com.hust.datn.service.dto.CustOrderDTO;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing {@link com.hust.datn.domain.CustOrder}.
@@ -36,6 +40,21 @@ public class CustOrderResource {
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
+
+    @Autowired
+    private OrderInfoService orderInfoService;
+
+    @Autowired
+    private OrderItemService orderItemService;
+
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private CartItemService cartItemService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private final CustOrderService custOrderService;
 
@@ -62,6 +81,30 @@ public class CustOrderResource {
             .body(result);
     }
 
+    @PostMapping("/order")
+    public ResponseEntity<?> createOrder(@RequestBody CustOrderDetailDTO custOrderDetailDTO) throws URISyntaxException {
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
+        CartDTO cartDTO = cartService.findOneByUserId(userId).orElseThrow(() -> new BadRequestAlertException("null", ENTITY_NAME, "null"));
+        if (custOrderDetailDTO.getInfo() == null ||
+            custOrderDetailDTO.getInfo().getId() == null ||
+            custOrderDetailDTO.getItems() == null ||
+            custOrderDetailDTO.getItems().size() == 0 ) {
+            throw new BadRequestAlertException("null", ENTITY_NAME, "null");
+        }
+        OrderInfoDTO orderInfoDTO = orderInfoService.findOne(custOrderDetailDTO.getInfo().getId()).orElseThrow(() -> new BadRequestAlertException("null",ENTITY_NAME,"null"));
+
+        CustOrderDTO result = custOrderService.save(new CustOrderDTO(custOrderDetailDTO.getInfo().getId(), userId));
+        List<OrderItemDTO> orderItemDTOS = custOrderDetailDTO.getItems().stream().map(e -> new OrderItemDTO(e, result.getId())).collect(Collectors.toList());
+        orderItemDTOS = orderItemService.saveAll(orderItemDTOS);
+        custOrderDetailDTO.setInfo(orderInfoDTO);
+        custOrderDetailDTO.setItems(orderItemDTOS);
+        cartItemService.deleteCartItemsByProductId(custOrderDetailDTO.getItems().stream().map(e -> e.getProductId()).collect(Collectors.toList()), cartDTO.getId());
+
+        return ResponseEntity.created(new URI("/order/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+            .body(custOrderDetailDTO);
+    }
+
     /**
      * {@code PUT  /cust-orders} : Updates an existing custOrder.
      *
@@ -81,6 +124,18 @@ public class CustOrderResource {
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, custOrderDTO.getId().toString()))
             .body(result);
+    }
+
+    @GetMapping("/order-detail")
+    public ResponseEntity<List<CustOrderDetailDTO>> getAllCustOrdersByUser() {
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
+        List<CustOrderDTO> result = custOrderService.findAllByUserId(userId);
+        List<CustOrderDetailDTO> orderDetailDTOS = result.stream().map(e -> {
+            OrderInfoDTO orderInfoDTO = orderInfoService.findOne(e.getOrderInfoId()).orElse(null);
+            List<OrderItemDTO> orderItemDTOS = orderItemService.findAllByOrderId(e.getId());
+            return new CustOrderDetailDTO(e, orderInfoDTO, orderItemDTOS);
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok().body(orderDetailDTOS);
     }
 
     /**

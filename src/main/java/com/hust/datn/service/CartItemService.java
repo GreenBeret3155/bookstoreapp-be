@@ -55,9 +55,11 @@ public interface CartItemService {
     Optional<CartItemDTO> findOne(Long id);
 
     /**
-     * Delete the "id" cartItem.
+     * Delete the "cartId" cartItem.
      *
-     * @param id the id of the entity.
+     * @param cartId the id of the entity.
      */
     void deleteCartItemsByCartId(Long cartId);
+
+    void deleteCartItemsByProductId(List<Long> productIdList, Long cartItemId);
 }

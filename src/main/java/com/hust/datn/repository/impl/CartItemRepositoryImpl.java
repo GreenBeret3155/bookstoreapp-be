@@ -69,4 +69,20 @@ public class CartItemRepositoryImpl implements CartItemCustomRepository {
             log.error("Error: ", exception);
         }
     }
+
+    @Override
+    public void deleteCartItemsByProductId(List<Long> productIdList, Long cartItemId) {
+        String cartItemIdsString = StringUtils.join(productIdList,",");
+        StringBuilder sb = new StringBuilder("DELETE FROM cart_item\n");
+        sb.append("WHERE cart_id = :cart_id\n");
+        sb.append("AND product_id in (");
+        sb.append(cartItemIdsString);
+        sb.append(")");
+        try {
+            int result = em.createNativeQuery(sb.toString()).setParameter("cart_id", cartItemId).executeUpdate();
+            log.debug("Delete removed items " + result);
+        } catch (Exception exception) {
+            log.error("Error: ", exception);
+        }
+    }
 }

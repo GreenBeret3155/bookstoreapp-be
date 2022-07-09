@@ -1,5 +1,6 @@
 package com.hust.datn.service.impl;
 
+import com.hust.datn.security.SecurityUtils;
 import com.hust.datn.service.CustOrderService;
 import com.hust.datn.domain.CustOrder;
 import com.hust.datn.repository.CustOrderRepository;
@@ -13,7 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing {@link CustOrder}.
@@ -37,6 +41,13 @@ public class CustOrderServiceImpl implements CustOrderService {
     public CustOrderDTO save(CustOrderDTO custOrderDTO) {
         log.debug("Request to save CustOrder : {}", custOrderDTO);
         CustOrder custOrder = custOrderMapper.toEntity(custOrderDTO);
+        if(custOrder.getId() == null){
+            custOrder.setOrderTime(Instant.now());
+        }
+        String userLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
+        custOrder.setUpdateTime(Instant.now());
+        custOrder.setUpdateUser(userLogin);
+
         custOrder = custOrderRepository.save(custOrder);
         return custOrderMapper.toDto(custOrder);
     }
@@ -47,6 +58,11 @@ public class CustOrderServiceImpl implements CustOrderService {
         log.debug("Request to get all CustOrders");
         return custOrderRepository.findAll(pageable)
             .map(custOrderMapper::toDto);
+    }
+
+    @Override
+    public List<CustOrderDTO> findAllByUserId(Long userId) {
+        return custOrderRepository.findAllByUserIdOrderByOrderTimeDesc(userId).stream().map(custOrderMapper::toDto).collect(Collectors.toList());
     }
 
 

@@ -11,6 +11,25 @@ public class OrderItemDTO implements Serializable {
     private Long orderId;
     private Integer quantity;
     private Long productId;
+    private String name;
+    private Double totalPrice;
+
+    public OrderItemDTO() {
+    }
+
+    public OrderItemDTO(OrderItemDTO orderItemDTO, Long orderId) {
+        this.orderId = orderId;
+        this.quantity = orderItemDTO.quantity;
+        this.productId = orderItemDTO.productId;
+        this.name = orderItemDTO.name;
+        this.totalPrice = orderItemDTO.totalPrice;
+    }
+
+    public OrderItemDTO(CartItemDTO cartItemDTO, Long orderId) {
+        this.orderId = orderId;
+        this.quantity = cartItemDTO.getQuantity();
+        this.productId = cartItemDTO.getProductId();
+    }
 
     public Long getId() {
         return id;
@@ -42,6 +61,22 @@ public class OrderItemDTO implements Serializable {
 
     public void setProductId(Long productId) {
         this.productId = productId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     @Override

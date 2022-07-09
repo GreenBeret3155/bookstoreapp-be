@@ -8,4 +8,6 @@ public interface CartItemCustomRepository {
     List<CartItem> saveCartItems(List<CartItem> cartItemList);
 
     void deleteRemovedCartItems(List<CartItem> cartItemList);
+
+    void deleteCartItemsByProductId(List<Long> productIdList, Long cartItemId);
 }

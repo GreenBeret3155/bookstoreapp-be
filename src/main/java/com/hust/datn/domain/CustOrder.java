@@ -6,6 +6,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 /**
  * A CustOrder.
@@ -21,10 +22,12 @@ public class CustOrder implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long orderInfoId;
+    private Long userId;
     private Integer state;
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    private Instant orderTime;
+    private Instant updateTime;
+    private String updateUser;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
     }
@@ -67,6 +70,14 @@ public class CustOrder implements Serializable {
         this.orderInfoId = orderInfoId;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     @Basic
     @Column(name = "state")
     public Integer getState() {
@@ -75,5 +86,35 @@ public class CustOrder implements Serializable {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    @Basic
+    @Column(name = "order_time")
+    public Instant getOrderTime() {
+        return orderTime;
+    }
+
+    public void setOrderTime(Instant orderTime) {
+        this.orderTime = orderTime;
+    }
+
+    @Basic
+    @Column(name = "update_time")
+    public Instant getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Instant updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    @Basic
+    @Column(name = "update_user")
+    public String getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
     }
 }

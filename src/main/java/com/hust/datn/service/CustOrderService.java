@@ -1,10 +1,12 @@
 package com.hust.datn.service;
 
+import com.hust.datn.domain.CustOrder;
 import com.hust.datn.service.dto.CustOrderDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,6 +29,8 @@ public interface CustOrderService {
      * @return the list of entities.
      */
     Page<CustOrderDTO> findAll(Pageable pageable);
+
+    List<CustOrderDTO> findAllByUserId(Long userId);
 
 
     /**

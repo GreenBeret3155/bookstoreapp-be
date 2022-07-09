@@ -5,6 +5,7 @@ import com.hust.datn.service.dto.OrderItemDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -21,6 +22,14 @@ public interface OrderItemService {
     OrderItemDTO save(OrderItemDTO orderItemDTO);
 
     /**
+     * Save a orderItem batch.
+     *
+     * @param orderItemDTO the entity to save.
+     * @return the persisted entity.
+     */
+    List<OrderItemDTO> saveAll(List<OrderItemDTO> orderItemDTO);
+
+    /**
      * Get all the orderItems.
      *
      * @param pageable the pagination information.
@@ -28,6 +37,7 @@ public interface OrderItemService {
      */
     Page<OrderItemDTO> findAll(Pageable pageable);
 
+    List<OrderItemDTO> findAllByOrderId(Long orderId);
 
     /**
      * Get the "id" orderItem.

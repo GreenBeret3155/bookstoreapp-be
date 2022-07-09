@@ -13,7 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing {@link OrderItem}.
@@ -42,11 +44,23 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
+    public List<OrderItemDTO> saveAll(List<OrderItemDTO> orderItemDTOs) {
+        List<OrderItem> orderItems = orderItemDTOs.stream().map(orderItemMapper:: toEntity).collect(Collectors.toList());
+        orderItems = orderItemRepository.saveAll(orderItems);
+        return orderItems.stream().map(orderItemMapper:: toDto).collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<OrderItemDTO> findAll(Pageable pageable) {
         log.debug("Request to get all OrderItems");
         return orderItemRepository.findAll(pageable)
             .map(orderItemMapper::toDto);
+    }
+
+    @Override
+    public List<OrderItemDTO> findAllByOrderId(Long orderId) {
+        return orderItemRepository.findAllByOrderId(orderId).stream().map(orderItemMapper::toDto).collect(Collectors.toList());
     }
 
 
