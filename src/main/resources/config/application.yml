@@ -172,3 +172,10 @@ elasticsearch:
 botchat:
   baseurl: http://localhost:5005
   webhook: /webhooks/rest/webhook
+
+minio:
+  baseUrl: http://10.60.108.80:9000
+  accessKey: minio
+  secretKey: minio123
+  bucket: hung
+  is.upload.file: true

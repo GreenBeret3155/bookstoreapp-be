@@ -3,6 +3,7 @@ package com.hust.datn.service.dto;
 import com.hust.datn.domain.Product;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -28,6 +29,11 @@ public class ProductDTO implements Serializable {
     private String description;
     private AuthorDTO author;
     private CategoryDTO category;
+    private Long authorId;
+    private Long categoryId;
+    private Integer status;
+    private Instant updateTime;
+    private String updateUser;
 
     public Long getId() {
         return id;
@@ -173,6 +179,46 @@ public class ProductDTO implements Serializable {
         this.category = category;
     }
 
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Instant getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Instant updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
+    }
+
     public ProductDTO() {
     }
 
@@ -195,6 +241,9 @@ public class ProductDTO implements Serializable {
         this.description = product.getDescription();
         this.author = author;
         this.category = category;
+        this.status = product.getStatus();
+        this.updateTime = product.getUpdateTime();
+        this.updateUser = product.getUpdateUser();
     }
 
     @Override

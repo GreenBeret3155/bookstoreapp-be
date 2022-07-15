@@ -50,16 +50,14 @@ public class ProductResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new productDTO, or with status {@code 400 (Bad Request)} if the product has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/products")
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) throws URISyntaxException {
-        log.debug("REST request to save Product : {}", productDTO);
-        if (productDTO.getId() != null) {
-            throw new BadRequestAlertException("A new product cannot already have an ID", ENTITY_NAME, "idexists");
-        }
+    @PostMapping("/save-product")
+    public ResponseEntity<ProductDTO> saveProduct(@RequestBody ProductDTO productDTO) throws URISyntaxException {
+//        log.debug("REST request to save Product : {}", productDTO);
+//        if (productDTO.getId() != null) {
+//            throw new BadRequestAlertException("A new product cannot already have an ID", ENTITY_NAME, "idexists");
+//        }
         ProductDTO result = productService.save(productDTO);
-        return ResponseEntity.created(new URI("/api/products/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok().body(result);
     }
 
     /**
@@ -71,17 +69,17 @@ public class ProductResource {
      * or with status {@code 500 (Internal Server Error)} if the productDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/products")
-    public ResponseEntity<ProductDTO> updateProduct(@RequestBody ProductDTO productDTO) throws URISyntaxException {
-        log.debug("REST request to update Product : {}", productDTO);
-        if (productDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        ProductDTO result = productService.save(productDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, productDTO.getId().toString()))
-            .body(result);
-    }
+//    @PutMapping("/products")
+//    public ResponseEntity<ProductDTO> updateProduct(@RequestBody ProductDTO productDTO) throws URISyntaxException {
+//        log.debug("REST request to update Product : {}", productDTO);
+//        if (productDTO.getId() == null) {
+//            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+//        }
+//        ProductDTO result = productService.save(productDTO);
+//        return ResponseEntity.ok()
+//            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, productDTO.getId().toString()))
+//            .body(result);
+//    }
 
     /**
      * {@code GET  /products} : get all the products.
@@ -90,9 +88,13 @@ public class ProductResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of products in body.
      */
     @GetMapping("/get-products")
-    public ResponseEntity<List<ProductDTO>> getAllProducts(Pageable pageable) {
+    public ResponseEntity<List<ProductDTO>> getAllProducts(@RequestParam(required = false)Long authorId,
+                                                           @RequestParam(required = false)Long categoryId,
+                                                           @RequestParam(required = false) String q,
+                                                           @RequestParam(required = false) Integer status,
+                                                           Pageable pageable) {
         log.debug("REST request to get a page of Products");
-        Page<ProductDTO> page = productService.findAll(pageable);
+        Page<ProductDTO> page = productService.query(authorId, categoryId, q, status, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

@@ -7,6 +7,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 /**
  * A Product.
@@ -38,6 +39,9 @@ public class Product implements Serializable {
     private String description;
     private Long authorId;
     private Long categoryId;
+    private Integer status;
+    private Instant updateTime;
+    private String updateUser;
 
     public Long getId() {
         return id;
@@ -217,6 +221,30 @@ public class Product implements Serializable {
         this.categoryId = categoryId;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Instant getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Instant updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
+    }
+
     public Product() {
     }
 
@@ -237,8 +265,11 @@ public class Product implements Serializable {
         this.productsetGroupName = productDTO.getProductsetGroupName();
         this.allTimeQuantitySold = productDTO.getAllTimeQuantitySold();
         this.description = productDTO.getDescription();
-        this.authorId = authorId;
-        this.categoryId = categoryId;
+        this.status = productDTO.getStatus();
+        this.updateTime = productDTO.getUpdateTime();
+        this.updateUser = productDTO.getUpdateUser();
+        this.authorId = authorId != null ? authorId : productDTO.getAuthorId();
+        this.categoryId = categoryId != null ? categoryId : productDTO.getCategoryId();
     }
 
     @Override

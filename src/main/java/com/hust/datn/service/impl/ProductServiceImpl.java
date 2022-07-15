@@ -1,5 +1,6 @@
 package com.hust.datn.service.impl;
 
+import com.hust.datn.security.SecurityUtils;
 import com.hust.datn.service.ProductService;
 import com.hust.datn.domain.Product;
 import com.hust.datn.repository.ProductRepository;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Optional;
 
 /**
@@ -41,7 +43,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO save(ProductDTO productDTO) {
         log.debug("Request to save Product : {}", productDTO);
-        Product product = productMapper.toEntity(productDTO);
+        Product product = productCustomMapper.productDTOToProduct(productDTO);
+        product.setUpdateUser(SecurityUtils.getCurrentUserLogin().get());
+        product.setUpdateTime(Instant.now());
         product = productRepository.save(product);
         return productMapper.toDto(product);
     }
@@ -51,6 +55,12 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Products");
         return productRepository.findAll(pageable)
+            .map(productCustomMapper::productToProductDTO);
+    }
+
+    @Override
+    public Page<ProductDTO> query(Long authorId, Long categoryId, String q, Integer status, Pageable pageable) {
+        return productRepository.query(authorId, categoryId, q, status, pageable)
             .map(productCustomMapper::productToProductDTO);
     }
 

@@ -28,6 +28,8 @@ public interface ProductService {
      */
     Page<ProductDTO> findAll(Pageable pageable);
 
+    Page<ProductDTO> query(Long authorId, Long categoryId, String q, Integer status, Pageable pageable);
+
 
     /**
      * Get the "id" product.

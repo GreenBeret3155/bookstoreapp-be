@@ -54,6 +54,8 @@ public class ProductCustomMapper {
     }
 
     public Product productDTOToProduct(ProductDTO productDTO) {
-        return new Product(productDTO, productDTO.getAuthor().getId(), productDTO.getCategory().getId());
+        return new Product(productDTO,
+            productDTO.getAuthor() != null ? productDTO.getAuthor().getId() : null,
+            productDTO.getAuthor() != null ? productDTO.getCategory().getId() : null);
     }
 }

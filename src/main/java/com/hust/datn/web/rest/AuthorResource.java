@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -90,7 +91,7 @@ public class AuthorResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of authors in body.
      */
     @GetMapping("/authors")
-    public ResponseEntity<List<AuthorDTO>> getAllAuthors(Pageable pageable) {
+    public ResponseEntity<List<AuthorDTO>> getAllAuthors(@PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
         log.debug("REST request to get a page of Authors");
         Page<AuthorDTO> page = authorService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
