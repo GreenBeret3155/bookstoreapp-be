@@ -2,9 +2,11 @@ package com.hust.datn.repository;
 
 import com.hust.datn.domain.ChatRoomUser;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,5 +15,6 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 @Repository
 public interface ChatRoomUserRepository extends JpaRepository<ChatRoomUser, Long> {
-    Optional<ChatRoomUser> findByUserId(Long userId);
+    Optional<ChatRoomUser> findByUserIdAndIsClient(Long userId, Integer isClient);
+    List<ChatRoomUser> findAllByChatRoomId(Long chatRoomId);
 }

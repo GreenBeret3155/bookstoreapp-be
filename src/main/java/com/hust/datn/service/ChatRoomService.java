@@ -2,9 +2,11 @@ package com.hust.datn.service;
 
 import com.hust.datn.service.dto.ChatRoomDTO;
 
+import com.hust.datn.service.dto.ChatRoomDetailDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,7 +30,9 @@ public interface ChatRoomService {
      */
     Page<ChatRoomDTO> findAll(Pageable pageable);
 
+    Page<ChatRoomDetailDTO> findAllByUserIdAdmin(Long userId, Pageable pageable);
 
+    ChatRoomDetailDTO findChatRoomDetailById(Long roomId);
     /**
      * Get the "id" chatRoom.
      *
@@ -49,5 +53,5 @@ public interface ChatRoomService {
      * @param userId
      * @return
      */
-    ChatRoomDTO createRoom(Long userId);
+    ChatRoomDTO createRoom(Long userId, Long userAdminId);
 }

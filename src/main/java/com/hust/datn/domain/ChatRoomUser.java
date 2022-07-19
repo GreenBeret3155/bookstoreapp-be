@@ -22,6 +22,7 @@ public class ChatRoomUser implements Serializable {
     private Long id;
     private Long chatRoomId;
     private Long userId;
+    private Integer isClient;
 
     public Long getId() {
         return id;
@@ -51,6 +52,14 @@ public class ChatRoomUser implements Serializable {
         this.userId = userId;
     }
 
+    public Integer getIsClient() {
+        return isClient;
+    }
+
+    public void setIsClient(Integer isClient) {
+        this.isClient = isClient;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -78,8 +87,9 @@ public class ChatRoomUser implements Serializable {
     public ChatRoomUser() {
     }
 
-    public ChatRoomUser(Long chatRoomId, Long userId) {
+    public ChatRoomUser(Long chatRoomId, Long userId, Integer isClient) {
         this.chatRoomId = chatRoomId;
         this.userId = userId;
+        this.isClient = isClient;
     }
 }

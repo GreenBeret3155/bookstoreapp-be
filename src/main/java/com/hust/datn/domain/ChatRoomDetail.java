@@ -12,18 +12,25 @@ import java.time.Instant;
  * A ChatRoom.
  */
 @Entity
-@Table(name = "chat_room", schema = "bookstoreapp", catalog = "")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class ChatRoom implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ChatRoomDetail implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String uuid;
     private Instant lastMessageTime;
     private String lastMessageContent;
+    private Long userId;
+
+    public ChatRoomDetail() {
+    }
+
+    public ChatRoomDetail(Long id, String uuid, Instant lastMessageTime, String lastMessageContent, Long userId) {
+        this.id = id;
+        this.uuid = uuid;
+        this.lastMessageTime = lastMessageTime;
+        this.lastMessageContent = lastMessageContent;
+        this.userId = userId;
+    }
 
     public Long getId() {
         return id;
@@ -59,27 +66,11 @@ public class ChatRoom implements Serializable {
         this.lastMessageContent = lastMessageContent;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ChatRoom)) {
-            return false;
-        }
-        return id != null && id.equals(((ChatRoom) o).id);
+    public Long getUserId() {
+        return userId;
     }
 
-    @Override
-    public int hashCode() {
-        return 31;
-    }
-
-    // prettier-ignore
-    @Override
-    public String toString() {
-        return "ChatRoom{" +
-            "id=" + getId() +
-            "}";
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

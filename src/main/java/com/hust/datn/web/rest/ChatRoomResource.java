@@ -1,6 +1,9 @@
 package com.hust.datn.web.rest;
 
+import com.hust.datn.repository.UserRepository;
+import com.hust.datn.security.SecurityUtils;
 import com.hust.datn.service.ChatRoomService;
+import com.hust.datn.service.dto.ChatRoomDetailDTO;
 import com.hust.datn.web.rest.errors.BadRequestAlertException;
 import com.hust.datn.service.dto.ChatRoomDTO;
 
@@ -9,9 +12,11 @@ import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -38,6 +43,9 @@ public class ChatRoomResource {
     private String applicationName;
 
     private final ChatRoomService chatRoomService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public ChatRoomResource(ChatRoomService chatRoomService) {
         this.chatRoomService = chatRoomService;
@@ -89,12 +97,28 @@ public class ChatRoomResource {
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of chatRooms in body.
      */
+//    @GetMapping("/chat-rooms")
+//    public ResponseEntity<List<ChatRoomDTO>> getAllChatRooms(Pageable pageable) {
+//        log.debug("REST request to get a page of ChatRooms");
+//        Page<ChatRoomDTO> page = chatRoomService.findAll(pageable);
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+//        return ResponseEntity.ok().headers(headers).body(page.getContent());
+//    }
+
     @GetMapping("/chat-rooms")
-    public ResponseEntity<List<ChatRoomDTO>> getAllChatRooms(Pageable pageable) {
+    public ResponseEntity<List<ChatRoomDetailDTO>> getAllChatRoomsByUser(@PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
         log.debug("REST request to get a page of ChatRooms");
-        Page<ChatRoomDTO> page = chatRoomService.findAll(pageable);
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull"));
+        Page<ChatRoomDetailDTO> page = chatRoomService.findAllByUserIdAdmin(userId, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/chat-room/{id}")
+    public ResponseEntity<ChatRoomDetailDTO> getChatRoomDetail(@PathVariable Long id) {
+        log.debug("REST request to get ChatRoomDetail : {}", id);
+        ChatRoomDetailDTO chatRoomDTO = chatRoomService.findChatRoomDetailById(id);
+        return ResponseEntity.ok().body(chatRoomDTO);
     }
 
     /**

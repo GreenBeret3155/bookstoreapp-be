@@ -10,6 +10,7 @@ public class ChatRoomUserDTO implements Serializable {
     private Long id;
     private Long chatRoomId;
     private Long userId;
+    private Integer isClient;
 
     public Long getId() {
         return id;
@@ -33,6 +34,14 @@ public class ChatRoomUserDTO implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Integer getIsClient() {
+        return isClient;
+    }
+
+    public void setIsClient(Integer isClient) {
+        this.isClient = isClient;
     }
 
     @Override

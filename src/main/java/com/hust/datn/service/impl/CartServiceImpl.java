@@ -62,7 +62,7 @@ public class CartServiceImpl implements CartService {
     @Transactional(readOnly = true)
     public Optional<CartDTO> findOneByUserId(Long userId) {
         log.debug("Request to get Cart : {}", userId);
-        return cartRepository.findById(userId)
+        return cartRepository.findByUserId(userId)
             .map(cartMapper::toDto);
     }
 

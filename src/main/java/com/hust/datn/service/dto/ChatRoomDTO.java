@@ -1,6 +1,8 @@
 package com.hust.datn.service.dto;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.util.List;
 
 /**
  * A DTO for the {@link com.hust.datn.domain.ChatRoom} entity.
@@ -9,6 +11,17 @@ public class ChatRoomDTO implements Serializable {
 
     private Long id;
     private String uuid;
+    private Instant lastMessageTime;
+    private String lastMessageContent;
+
+    public ChatRoomDTO() {
+    }
+
+    public ChatRoomDTO(Long id, Instant lastMessageTime, String lastMessageContent) {
+        this.id = id;
+        this.lastMessageTime = lastMessageTime;
+        this.lastMessageContent = lastMessageContent;
+    }
 
     public Long getId() {
         return id;
@@ -24,6 +37,22 @@ public class ChatRoomDTO implements Serializable {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public Instant getLastMessageTime() {
+        return lastMessageTime;
+    }
+
+    public void setLastMessageTime(Instant lastMessageTime) {
+        this.lastMessageTime = lastMessageTime;
+    }
+
+    public String getLastMessageContent() {
+        return lastMessageContent;
+    }
+
+    public void setLastMessageContent(String lastMessageContent) {
+        this.lastMessageContent = lastMessageContent;
     }
 
     @Override

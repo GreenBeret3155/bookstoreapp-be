@@ -21,4 +21,9 @@ public final class Constants {
 
     private Constants() {
     }
+
+    public interface NOTIFICATION_TYPE {
+        Integer NEW_ROOM = 1;
+        Integer UPDATE_ROOM = 2;
+    }
 }

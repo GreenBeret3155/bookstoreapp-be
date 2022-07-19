@@ -62,14 +62,23 @@ public class AccountResource {
      * @throws EmailAlreadyUsedException {@code 400 (Bad Request)} if the email is already used.
      * @throws LoginAlreadyUsedException {@code 400 (Bad Request)} if the login is already used.
      */
+//    @PostMapping("/register")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public void registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
+//        if (!checkPasswordLength(managedUserVM.getPassword())) {
+//            throw new InvalidPasswordException();
+//        }
+//        User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
+//        mailService.sendActivationEmail(user);
+//    }
+
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
         if (!checkPasswordLength(managedUserVM.getPassword())) {
             throw new InvalidPasswordException();
         }
-        User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
-        mailService.sendActivationEmail(user);
+        User user = userService.registerClientUser(managedUserVM, managedUserVM.getPassword());
     }
 
     /**

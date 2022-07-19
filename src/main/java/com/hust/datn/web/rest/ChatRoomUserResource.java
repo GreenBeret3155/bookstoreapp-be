@@ -103,12 +103,12 @@ public class ChatRoomUserResource {
      * @param id the id of the chatRoomUserDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the chatRoomUserDTO, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/chat-room-users/{id}")
-    public ResponseEntity<ChatRoomUserDTO> getChatRoomUser(@PathVariable Long id) {
-        log.debug("REST request to get ChatRoomUser : {}", id);
-        Optional<ChatRoomUserDTO> chatRoomUserDTO = chatRoomUserService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(chatRoomUserDTO);
-    }
+//    @GetMapping("/chat-room-users/{id}")
+//    public ResponseEntity<ChatRoomUserDTO> getChatRoomUser(@PathVariable Long id) {
+//        log.debug("REST request to get ChatRoomUser : {}", id);
+//        Optional<ChatRoomUserDTO> chatRoomUserDTO = chatRoomUserService.findOne(id);
+//        return ResponseUtil.wrapOrNotFound(chatRoomUserDTO);
+//    }
 
     /**
      * {@code DELETE  /chat-room-users/:id} : delete the "id" chatRoomUser.

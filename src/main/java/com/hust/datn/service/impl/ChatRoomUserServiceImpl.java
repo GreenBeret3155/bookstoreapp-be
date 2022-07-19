@@ -49,20 +49,19 @@ public class ChatRoomUserServiceImpl implements ChatRoomUserService {
             .map(chatRoomUserMapper::toDto);
     }
 
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Optional<ChatRoomUserDTO> findOne(Long userId) {
+//        log.debug("Request to get ChatRoomUser : {}", userId);
+//        return chatRoomUserRepository.findOne(userId)
+//            .map(chatRoomUserMapper::toDto);
+//    }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ChatRoomUserDTO> findOne(Long userId) {
-        log.debug("Request to get ChatRoomUser : {}", userId);
-        return chatRoomUserRepository.findByUserId(userId)
-            .map(chatRoomUserMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<ChatRoomUserDTO> findOneByUserId(Long userId) {
+    public Optional<ChatRoomUserDTO> findOneByUserIdClient(Long userId) {
         log.debug("Request to get ChatRoomUser by userid : {}", userId);
-        return chatRoomUserRepository.findByUserId(userId)
+        return chatRoomUserRepository.findByUserIdAndIsClient(userId, 1)
             .map(chatRoomUserMapper::toDto);
     }
 

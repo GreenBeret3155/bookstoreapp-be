@@ -35,7 +35,7 @@ public interface ChatRoomUserService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<ChatRoomUserDTO> findOne(Long id);
+//    Optional<ChatRoomUserDTO> findOne(Long id);
 
     /**
      * Get the "id" chatRoomUser.
@@ -43,7 +43,7 @@ public interface ChatRoomUserService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<ChatRoomUserDTO> findOneByUserId(Long id);
+    Optional<ChatRoomUserDTO> findOneByUserIdClient(Long id);
 
     /**
      * Delete the "id" chatRoomUser.
