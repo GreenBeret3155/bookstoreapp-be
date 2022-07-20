@@ -7,6 +7,7 @@ import com.hust.datn.service.dto.ProductSearchDTO;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.undertow.util.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,8 +51,29 @@ public class ProductSearchResource {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ProductSearchDTO>> onSearchObject(@RequestParam String q) throws Exception {
-        List<ProductSearchDTO> lstData = productSearchService.onSearchObject(q);
+    public ResponseEntity<List<?>> onSearchObject(@RequestParam(required = false) String q,
+                                                  @RequestParam Integer type) throws Exception {
+        List<?> lstData = productSearchService.onSearchObject(q, type);
+
+        return ResponseEntity.ok().body(lstData);
+    }
+
+    @GetMapping("/search-by-author")
+    public ResponseEntity<List<?>> onSearchProductByAuthorId(@RequestParam() Integer authorId) throws Exception {
+        if(authorId == null){
+            throw new BadRequestAlertException("onSearchProductByAuthorId", "authorId null", "authorId null");
+        }
+        List<?> lstData = productSearchService.onSearchProductByAuthorId(authorId);
+
+        return ResponseEntity.ok().body(lstData);
+    }
+
+    @GetMapping("/search-by-category")
+    public ResponseEntity<List<?>> onSearchProductByCategoryId(@RequestParam() Integer categoryId) throws Exception {
+        if(categoryId == null){
+            throw new BadRequestAlertException("onSearchProductByCategoryId", "categoryId null", "categoryId null");
+        }
+        List<?> lstData = productSearchService.onSearchProductByCategoryId(categoryId);
 
         return ResponseEntity.ok().body(lstData);
     }

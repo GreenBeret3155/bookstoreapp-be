@@ -17,6 +17,11 @@ public final class Constants {
         String OBJ_RPT_GRAPH = "obj-rpt-graph";
         String TYPE = "_doc";
         String PRODUCT_INDEX = "sync_product_2";
+        String AUTHOR_INDEX = "sync_author";
+        String CATEGORY_INDEX = "sync_category";
+        Integer PRODUCT_SEARCH_TYPE = 1;
+        Integer AUTHOR_SEARCH_TYPE = 2;
+        Integer CATEGORY_SEARCH_TYPE = 3;
     }
 
     private Constants() {

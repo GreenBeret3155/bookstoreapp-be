@@ -1,5 +1,6 @@
 package com.hust.datn.service;
 
+import com.hust.datn.service.dto.AuthorDTO;
 import com.hust.datn.service.dto.ProductSearchDTO;
 
 import org.springframework.data.domain.Page;
@@ -16,8 +17,13 @@ public interface ProductSearchService {
     /**
      * Save a productSearch.
      *
-     * @param productSearchDTO the entity to save.
      * @return the persisted entity.
      */
-    List<ProductSearchDTO> onSearchObject(String keyword) throws Exception;
+    List<?> onSearchObject(String keyword ,Integer type) throws Exception;
+
+    List<?> onSearchProductByAuthorId(Integer authorId) throws Exception;
+
+    List<?> onSearchProductByCategoryId(Integer categoryId) throws Exception;
+
+//    List<AuthorDTO> onSearchObject(String keyword , Integer type) throws Exception;
 }
