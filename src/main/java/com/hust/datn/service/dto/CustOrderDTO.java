@@ -1,5 +1,7 @@
 package com.hust.datn.service.dto;
 
+import com.hust.datn.config.Constants;
+
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -13,16 +15,21 @@ public class CustOrderDTO implements Serializable {
     private Long userId;
     private Integer state;
     private Instant orderTime;
+    private Integer paymentType;
     private Instant updateTime;
     private String updateUser;
 
     public CustOrderDTO() {
     }
 
-    public CustOrderDTO(Long orderInfoId, Long userId) {
+    public CustOrderDTO(Long orderInfoId, Long userId, Integer paymentType) {
         this.orderInfoId = orderInfoId;
         this.userId = userId;
-        this.state = 0;
+        this.paymentType = paymentType;
+        this.state = Constants.ORDER_STATE.DANG_THANH_TOAN;
+        if(paymentType == Constants.PAYMENT_TYPE.COD){
+            this.state = Constants.ORDER_STATE.DANG_XU_LY;
+        }
     }
 
     public Long getId() {
@@ -63,6 +70,14 @@ public class CustOrderDTO implements Serializable {
 
     public void setOrderTime(Instant orderTime) {
         this.orderTime = orderTime;
+    }
+
+    public Integer getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(Integer paymentType) {
+        this.paymentType = paymentType;
     }
 
     public Instant getUpdateTime() {

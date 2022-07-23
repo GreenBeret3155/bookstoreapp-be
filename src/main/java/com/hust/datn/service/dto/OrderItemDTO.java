@@ -10,6 +10,9 @@ public class OrderItemDTO implements Serializable {
     private Long id;
     private Long orderId;
     private Integer quantity;
+    private Long price;
+    private Long discount;
+    private String thumbnailUrl;
     private Long productId;
     private String name;
     private Double totalPrice;
@@ -19,10 +22,13 @@ public class OrderItemDTO implements Serializable {
 
     public OrderItemDTO(OrderItemDTO orderItemDTO, Long orderId) {
         this.orderId = orderId;
-        this.quantity = orderItemDTO.quantity;
-        this.productId = orderItemDTO.productId;
-        this.name = orderItemDTO.name;
-        this.totalPrice = orderItemDTO.totalPrice;
+        this.quantity = orderItemDTO.getQuantity();
+        this.productId = orderItemDTO.getProductId();
+        this.name = orderItemDTO.getName();
+        this.totalPrice = orderItemDTO.getTotalPrice();
+        this.discount = orderItemDTO.getDiscount();
+        this.price = orderItemDTO.getDiscount();
+        this.thumbnailUrl = orderItemDTO.getThumbnailUrl();
     }
 
     public OrderItemDTO(CartItemDTO cartItemDTO, Long orderId) {
@@ -77,6 +83,30 @@ public class OrderItemDTO implements Serializable {
 
     public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public Long getPrice() {
+        return price;
+    }
+
+    public void setPrice(Long price) {
+        this.price = price;
+    }
+
+    public Long getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Long discount) {
+        this.discount = discount;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     @Override

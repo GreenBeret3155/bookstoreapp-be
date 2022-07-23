@@ -9,6 +9,7 @@ import com.hust.datn.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,17 +88,19 @@ public class CustOrderResource {
         CartDTO cartDTO = cartService.findOneByUserId(userId).orElseThrow(() -> new BadRequestAlertException("null", ENTITY_NAME, "null"));
         if (custOrderDetailDTO.getInfo() == null ||
             custOrderDetailDTO.getInfo().getId() == null ||
+            custOrderDetailDTO.getOrder().getPaymentType() == null ||
             custOrderDetailDTO.getItems() == null ||
             custOrderDetailDTO.getItems().size() == 0 ) {
             throw new BadRequestAlertException("null", ENTITY_NAME, "null");
         }
         OrderInfoDTO orderInfoDTO = orderInfoService.findOne(custOrderDetailDTO.getInfo().getId()).orElseThrow(() -> new BadRequestAlertException("null",ENTITY_NAME,"null"));
 
-        CustOrderDTO result = custOrderService.save(new CustOrderDTO(custOrderDetailDTO.getInfo().getId(), userId));
+        CustOrderDTO result = custOrderService.save(new CustOrderDTO(custOrderDetailDTO.getInfo().getId(), userId, custOrderDetailDTO.getOrder().getPaymentType()));
         List<OrderItemDTO> orderItemDTOS = custOrderDetailDTO.getItems().stream().map(e -> new OrderItemDTO(e, result.getId())).collect(Collectors.toList());
         orderItemDTOS = orderItemService.saveAll(orderItemDTOS);
         custOrderDetailDTO.setInfo(orderInfoDTO);
         custOrderDetailDTO.setItems(orderItemDTOS);
+        custOrderDetailDTO.setOrder(result);
         cartItemService.deleteCartItemsByProductId(custOrderDetailDTO.getItems().stream().map(e -> e.getProductId()).collect(Collectors.toList()), cartDTO.getId());
 
         return ResponseEntity.created(new URI("/order/" + result.getId()))
@@ -126,7 +129,7 @@ public class CustOrderResource {
             .body(result);
     }
 
-    @GetMapping("/order-detail")
+    @GetMapping("/orders-detail")
     public ResponseEntity<List<CustOrderDetailDTO>> getAllCustOrdersByUser() {
         Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
         List<CustOrderDTO> result = custOrderService.findAllByUserId(userId);
@@ -136,6 +139,18 @@ public class CustOrderResource {
             return new CustOrderDetailDTO(e, orderInfoDTO, orderItemDTOS);
         }).collect(Collectors.toList());
         return ResponseEntity.ok().body(orderDetailDTOS);
+    }
+
+    @GetMapping("/order-detail/{id}")
+    public ResponseEntity<CustOrderDetailDTO> getCustOrderByUser(@PathVariable() Long id) throws NotFoundException {
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
+        CustOrderDTO result = custOrderService.findOne(id).orElseThrow(() -> new NotFoundException(ENTITY_NAME + id));
+        if(result.getUserId() != userId){
+            throw new NotFoundException(ENTITY_NAME + id);
+        }
+        OrderInfoDTO orderInfoDTO = orderInfoService.findOne(result.getOrderInfoId()).orElse(null);
+        List<OrderItemDTO> orderItemDTOS = orderItemService.findAllByOrderId(result.getId());
+        return ResponseEntity.ok().body(new CustOrderDetailDTO(result, orderInfoDTO, orderItemDTOS));
     }
 
     /**

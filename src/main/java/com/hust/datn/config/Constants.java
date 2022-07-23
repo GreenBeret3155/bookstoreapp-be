@@ -31,4 +31,15 @@ public final class Constants {
         Integer NEW_ROOM = 1;
         Integer UPDATE_ROOM = 2;
     }
+
+    public interface PAYMENT_TYPE {
+        Integer COD = 1;
+        Integer VNPAY = 2;
+        Integer MOMO = 3;
+    }
+
+    public interface ORDER_STATE {
+        Integer DANG_THANH_TOAN = 0;
+        Integer DANG_XU_LY = 1;
+    }
 }
