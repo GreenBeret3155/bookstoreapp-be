@@ -15,7 +15,7 @@ public class OrderItemDTO implements Serializable {
     private String thumbnailUrl;
     private Long productId;
     private String name;
-    private Double totalPrice;
+    private Long totalPrice;
 
     public OrderItemDTO() {
     }
@@ -77,11 +77,11 @@ public class OrderItemDTO implements Serializable {
         this.name = name;
     }
 
-    public Double getTotalPrice() {
+    public Long getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Double totalPrice) {
+    public void setTotalPrice(Long totalPrice) {
         this.totalPrice = totalPrice;
     }
 

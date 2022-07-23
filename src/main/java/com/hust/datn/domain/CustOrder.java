@@ -26,6 +26,7 @@ public class CustOrder implements Serializable {
     private Integer state;
     private Instant orderTime;
     private Integer paymentType;
+    private Long amount;
     private Instant updateTime;
     private String updateUser;
 
@@ -105,6 +106,14 @@ public class CustOrder implements Serializable {
 
     public void setPaymentType(Integer paymentType) {
         this.paymentType = paymentType;
+    }
+
+    public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
     }
 
     @Basic

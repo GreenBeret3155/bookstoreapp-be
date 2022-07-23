@@ -179,3 +179,6 @@ minio:
   secretKey: minio123
   bucket: hung
   is.upload.file: true
+
+momo:
+  returnBaseUrl: http://localhost:4200/main-pages/payment-result

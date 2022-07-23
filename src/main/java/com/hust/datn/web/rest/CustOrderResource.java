@@ -95,7 +95,7 @@ public class CustOrderResource {
         }
         OrderInfoDTO orderInfoDTO = orderInfoService.findOne(custOrderDetailDTO.getInfo().getId()).orElseThrow(() -> new BadRequestAlertException("null",ENTITY_NAME,"null"));
 
-        CustOrderDTO result = custOrderService.save(new CustOrderDTO(custOrderDetailDTO.getInfo().getId(), userId, custOrderDetailDTO.getOrder().getPaymentType()));
+        CustOrderDTO result = custOrderService.save(new CustOrderDTO(custOrderDetailDTO.getInfo().getId(), userId, custOrderDetailDTO.getOrder().getPaymentType(), custOrderDetailDTO.getItems()));
         List<OrderItemDTO> orderItemDTOS = custOrderDetailDTO.getItems().stream().map(e -> new OrderItemDTO(e, result.getId())).collect(Collectors.toList());
         orderItemDTOS = orderItemService.saveAll(orderItemDTOS);
         custOrderDetailDTO.setInfo(orderInfoDTO);

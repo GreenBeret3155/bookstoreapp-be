@@ -99,6 +99,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.momo-wallet</groupId>
+            <artifactId>momopayment</artifactId>
+            <version>1.0</version>
+        </dependency>
         <!--        spring data elastic-->
         <dependency>
             <groupId>org.elasticsearch</groupId>

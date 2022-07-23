@@ -8,20 +8,17 @@ public class CustOrderDetailDTO {
     private OrderInfoDTO info;
     private List<OrderItemDTO> items;
     private List<CartItemDTO> cartItems;
-    private Double orderValue;
+    private Long orderValue;
 
     public CustOrderDetailDTO() {
     }
 
     public CustOrderDetailDTO(CustOrderDTO order, OrderInfoDTO info, List<OrderItemDTO> items) {
-        Double v = 0d;
+        Long v = 0l;
         this.order = order;
         this.info = info;
         this.items = items;
-        for(int i = 0; i < items.size(); i++){
-            v += items.get(i).getTotalPrice();
-        };
-        this.orderValue = v;
+        this.orderValue = order.getAmount();
     }
 
     public CustOrderDetailDTO(OrderInfoDTO orderInfoDTO, List<CartItemDTO> cartItemsList, Long orderId) {
@@ -61,11 +58,11 @@ public class CustOrderDetailDTO {
         this.cartItems = cartItems;
     }
 
-    public Double getOrderValue() {
+    public Long getOrderValue() {
         return orderValue;
     }
 
-    public void setOrderValue(Double orderValue) {
+    public void setOrderValue(Long orderValue) {
         this.orderValue = orderValue;
     }
 }

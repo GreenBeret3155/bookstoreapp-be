@@ -4,6 +4,7 @@ import com.hust.datn.config.Constants;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 
 /**
  * A DTO for the {@link com.hust.datn.domain.CustOrder} entity.
@@ -16,13 +17,14 @@ public class CustOrderDTO implements Serializable {
     private Integer state;
     private Instant orderTime;
     private Integer paymentType;
+    private Long amount;
     private Instant updateTime;
     private String updateUser;
 
     public CustOrderDTO() {
     }
 
-    public CustOrderDTO(Long orderInfoId, Long userId, Integer paymentType) {
+    public CustOrderDTO(Long orderInfoId, Long userId, Integer paymentType, List<OrderItemDTO> orderItemDTOS ) {
         this.orderInfoId = orderInfoId;
         this.userId = userId;
         this.paymentType = paymentType;
@@ -30,6 +32,11 @@ public class CustOrderDTO implements Serializable {
         if(paymentType == Constants.PAYMENT_TYPE.COD){
             this.state = Constants.ORDER_STATE.DANG_XU_LY;
         }
+        Long v = 0l;
+        for(int i = 0; i < orderItemDTOS.size(); i++){
+            v += orderItemDTOS.get(i).getTotalPrice();
+        };
+        this.amount = v;
     }
 
     public Long getId() {
@@ -94,6 +101,14 @@ public class CustOrderDTO implements Serializable {
 
     public void setUpdateUser(String updateUser) {
         this.updateUser = updateUser;
+    }
+
+    public Long getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
     }
 
     @Override

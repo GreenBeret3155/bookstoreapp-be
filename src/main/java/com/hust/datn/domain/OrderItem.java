@@ -24,7 +24,7 @@ public class OrderItem implements Serializable {
     private Integer quantity;
     private Long productId;
     private String name;
-    private Double totalPrice;
+    private Long totalPrice;
     private Long price;
     private Long discount;
     private String thumbnailUrl;
@@ -104,11 +104,11 @@ public class OrderItem implements Serializable {
 
     @Basic
     @Column(name = "totalPrice")
-    public Double getTotalPrice() {
+    public Long getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Double totalPrice) {
+    public void setTotalPrice(Long totalPrice) {
         this.totalPrice = totalPrice;
     }
 
