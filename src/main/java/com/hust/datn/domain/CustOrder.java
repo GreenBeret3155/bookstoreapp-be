@@ -29,6 +29,7 @@ public class CustOrder implements Serializable {
     private Long amount;
     private Instant updateTime;
     private String updateUser;
+    private String message;
 
     public Long getId() {
         return id;
@@ -134,5 +135,13 @@ public class CustOrder implements Serializable {
 
     public void setUpdateUser(String updateUser) {
         this.updateUser = updateUser;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

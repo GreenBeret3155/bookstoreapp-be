@@ -43,16 +43,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class ChatController {
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     public static final String APPLICATION_JSON_VALUE = "application/json";
-    public static final ChatBotReceiveMessage DEFAULT_ERROR_MESSAGE = new ChatBotReceiveMessage("-99", "Bot chưa hiểu ....");
+    public static final List<ChatBotReceiveMessage> DEFAULT_ERROR_MESSAGE = new ArrayList<>(Arrays.asList(new ChatBotReceiveMessage("-99", "Bot chưa hiểu ....")));
     public static String CB_URL;
 
     @Autowired
@@ -133,11 +131,9 @@ public class ChatController {
         chatMessageDTO.setId(null);
         ChatMessageDTO saved = chatMessageService.save(chatMessageDTO);
         saved.setId(null);
-        simpMessagingTemplate.convertAndSendToUser(String.valueOf(chatMessageDTO.getSenderId()),"/queue/messages",saved);
-        ChatBotReceiveMessage chatBotReceiveMessage =  sentChatToBot(String.valueOf(saved.getChatRoomId()), saved.getContent());
-        ChatMessageDTO botResponse = chatMessageService.save(new ChatMessageDTO(chatBotReceiveMessage, chatMessageDTO.getChatRoomId(), Instant.now()));
-        botResponse.setId(null);
-        simpMessagingTemplate.convertAndSendToUser(String.valueOf(saved.getChatRoomId()),"/queue/messages",botResponse);
+        simpMessagingTemplate.convertAndSendToUser(String.valueOf(chatMessageDTO.getSenderId()),"/bot/messages",saved);
+        List<ChatBotReceiveMessage> chatBotReceiveMessage =  sentChatToBot(String.valueOf(saved.getChatRoomId()), saved.getContent());
+        simpMessagingTemplate.convertAndSendToUser(String.valueOf(saved.getChatRoomId()),"/bot/messages",chatBotReceiveMessage);
     }
 
     private ChatRoomDTO getChatRoom(){
@@ -159,7 +155,7 @@ public class ChatController {
     }
 
 
-    private ChatBotReceiveMessage sentChatToBot(String sender, String message) throws IOException {
+    private List<ChatBotReceiveMessage> sentChatToBot(String sender, String message) throws IOException {
         Response response = OkHttpRequestCommon.post(CB_URL,
             "{ \"sender\" : \"" + "u_" + sender + "\"," + "\"message\" :\"" + message + "\" }",
             Headers.of(new HashMap<String, String>() {{
@@ -172,11 +168,12 @@ public class ChatController {
         log.debug("bot response" + resBody);
         if(code == 200){
             JSONArray jsonArray = new JSONArray(resBody);
-//            for( int i = 0 ; i < jsonArray.length(); i++){
-//
-//            }
             ObjectMapper mapper = new ObjectMapper();
-            ChatBotReceiveMessage chatBotReceiveMessage = mapper.readValue(jsonArray.get(0).toString(), ChatBotReceiveMessage.class);
+            List<ChatBotReceiveMessage> chatBotReceiveMessage = new ArrayList<>();
+            for( int i = 0 ; i < jsonArray.length(); i++){
+                chatBotReceiveMessage.add(mapper.readValue(jsonArray.get(i).toString(), ChatBotReceiveMessage.class));
+            }
+
             return chatBotReceiveMessage;
         }
 

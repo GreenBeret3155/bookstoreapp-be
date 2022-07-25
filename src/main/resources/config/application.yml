@@ -182,3 +182,7 @@ minio:
 
 momo:
   returnBaseUrl: http://localhost:4200/main-pages/payment-result
+
+proxy:
+  hostname: 10.61.11.42
+  port: 3128

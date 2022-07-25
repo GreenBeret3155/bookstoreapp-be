@@ -1,5 +1,7 @@
 package com.hust.datn.service.dto;
 
+import com.mservice.models.PaymentResponse;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,6 +11,7 @@ public class CustOrderDetailDTO {
     private List<OrderItemDTO> items;
     private List<CartItemDTO> cartItems;
     private Long orderValue;
+    private PaymentResponse paymentResponse;
 
     public CustOrderDetailDTO() {
     }
@@ -64,5 +67,13 @@ public class CustOrderDetailDTO {
 
     public void setOrderValue(Long orderValue) {
         this.orderValue = orderValue;
+    }
+
+    public PaymentResponse getPaymentResponse() {
+        return paymentResponse;
+    }
+
+    public void setPaymentResponse(PaymentResponse paymentResponse) {
+        this.paymentResponse = paymentResponse;
     }
 }

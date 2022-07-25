@@ -38,8 +38,15 @@ public final class Constants {
         Integer MOMO = 3;
     }
 
+    public interface ORDER_RESULT_MESSAGE {
+        String PAY_SUCCESS = "Thanh toán thành công";
+        String PAY_FAILED = "Thanh toán thất bại";
+    }
+
     public interface ORDER_STATE {
         Integer DANG_THANH_TOAN = 0;
         Integer DANG_XU_LY = 1;
+        Integer DA_THANH_TOAN = 2;
+        Integer DA_HUY = 3;
     }
 }

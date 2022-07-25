@@ -20,6 +20,7 @@ public class CustOrderDTO implements Serializable {
     private Long amount;
     private Instant updateTime;
     private String updateUser;
+    private String message;
 
     public CustOrderDTO() {
     }
@@ -109,6 +110,14 @@ public class CustOrderDTO implements Serializable {
 
     public void setAmount(Long amount) {
         this.amount = amount;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override

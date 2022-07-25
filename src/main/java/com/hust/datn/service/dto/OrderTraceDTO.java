@@ -16,6 +16,18 @@ public class OrderTraceDTO implements Serializable {
     private String updateUser;
     private Instant updateTime;
 
+    public OrderTraceDTO() {
+    }
+
+    public OrderTraceDTO(Long orderId, String description, String content, Integer state, String updateUser, Instant updateTime) {
+        this.orderId = orderId;
+        this.description = description;
+        this.content = content;
+        this.state = state;
+        this.updateUser = updateUser;
+        this.updateTime = updateTime;
+    }
+
     public Long getId() {
         return id;
     }

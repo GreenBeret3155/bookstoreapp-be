@@ -1,11 +1,13 @@
 package com.hust.datn.web.rest;
 
+import com.hust.datn.config.Constants;
 import com.hust.datn.repository.UserRepository;
 import com.hust.datn.security.SecurityUtils;
 import com.hust.datn.service.*;
 import com.hust.datn.service.dto.*;
 import com.hust.datn.web.rest.errors.BadRequestAlertException;
 
+import com.mservice.models.PaymentResponse;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
@@ -57,6 +59,9 @@ public class CustOrderResource {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private MomoService momoService;
+
     private final CustOrderService custOrderService;
 
     public CustOrderResource(CustOrderService custOrderService) {
@@ -83,7 +88,7 @@ public class CustOrderResource {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<?> createOrder(@RequestBody CustOrderDetailDTO custOrderDetailDTO) throws URISyntaxException {
+    public ResponseEntity<?> createOrder(@RequestBody CustOrderDetailDTO custOrderDetailDTO) throws Exception {
         Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
         CartDTO cartDTO = cartService.findOneByUserId(userId).orElseThrow(() -> new BadRequestAlertException("null", ENTITY_NAME, "null"));
         if (custOrderDetailDTO.getInfo() == null ||
@@ -103,6 +108,10 @@ public class CustOrderResource {
         custOrderDetailDTO.setOrder(result);
         cartItemService.deleteCartItemsByProductId(custOrderDetailDTO.getItems().stream().map(e -> e.getProductId()).collect(Collectors.toList()), cartDTO.getId());
 
+        if(result.getPaymentType() == Constants.PAYMENT_TYPE.MOMO){
+            PaymentResponse paymentResponse = momoService.createOrderPayRequest(result);
+            custOrderDetailDTO.setPaymentResponse(paymentResponse);
+        }
         return ResponseEntity.created(new URI("/order/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(custOrderDetailDTO);
@@ -145,7 +154,7 @@ public class CustOrderResource {
     public ResponseEntity<CustOrderDetailDTO> getCustOrderByUser(@PathVariable() Long id) throws NotFoundException {
         Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
         CustOrderDTO result = custOrderService.findOne(id).orElseThrow(() -> new NotFoundException(ENTITY_NAME + id));
-        if(result.getUserId() != userId){
+        if(!result.getUserId().equals(userId)){
             throw new NotFoundException(ENTITY_NAME + id);
         }
         OrderInfoDTO orderInfoDTO = orderInfoService.findOne(result.getOrderInfoId()).orElse(null);

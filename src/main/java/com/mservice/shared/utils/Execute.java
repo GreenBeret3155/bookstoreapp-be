@@ -4,6 +4,7 @@ import com.mservice.models.HttpRequest;
 import com.mservice.models.HttpResponse;
 import okhttp3.*;
 import okio.Buffer;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,9 +12,19 @@ import java.net.Proxy;
 
 public class Execute {
 
-    OkHttpClient client = new OkHttpClient.Builder().proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("10.61.11.42", 3128))).build();
+    @Value("${proxy.hostname}")
+    private String hostname;
+
+    @Value("${proxy.port}")
+    private Integer port;
 
     public HttpResponse sendToMoMo(String endpoint, String payload) {
+
+        OkHttpClient client = new OkHttpClient.Builder().proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("10.61.11.42", 3128))).build();
+
+        if(hostname != null && port != null){
+            client = new OkHttpClient.Builder().proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostname, port))).build();
+        }
 
         try {
 

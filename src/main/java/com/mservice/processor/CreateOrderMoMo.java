@@ -58,7 +58,8 @@ public class CreateOrderMoMo extends AbstractProcess<PaymentRequest, PaymentResp
             HttpResponse response = execute.sendToMoMo(environment.getMomoEndpoint().getCreateUrl(), payload);
 
             if (response.getStatus() != 200) {
-                throw new MoMoException("[PaymentResponse] [" + request.getOrderId() + "] -> Error API");
+//                throw new MoMoException("[PaymentResponse] [" + request.getOrderId() + "] -> Error API");
+                return new PaymentResponse(response.getStatus(), response.getData());
             }
 
             System.out.println("uweryei7rye8wyreow8: "+ response.getData());

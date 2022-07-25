@@ -38,9 +38,9 @@ public class ConfirmTransaction extends AbstractProcess<ConfirmRequest, ConfirmR
 
             HttpResponse response = execute.sendToMoMo(environment.getMomoEndpoint().getConfirmUrl(), payload);
 
-            if (response.getStatus() != 200) {
-                throw new MoMoException("[ConfirmTransactionResponse] [" + request.getOrderId() + "] -> Error API");
-            }
+//            if (response.getStatus() != 200) {
+//                throw new MoMoException("[ConfirmTransactionResponse] [" + request.getOrderId() + "] -> Error API");
+//            }
 
             System.out.println("uweryei7rye8wyreow8: "+ response.getData());
 

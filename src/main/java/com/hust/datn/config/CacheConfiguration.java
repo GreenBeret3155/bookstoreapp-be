@@ -58,7 +58,6 @@ public class CacheConfiguration {
             createCache(cm, com.hust.datn.domain.Cart.class.getName());
             createCache(cm, com.hust.datn.domain.CartItem.class.getName());
             createCache(cm, com.hust.datn.domain.OrderInfo.class.getName());
-            createCache(cm, com.hust.datn.domain.CustOrder.class.getName());
             createCache(cm, com.hust.datn.domain.OrderItem.class.getName());
             createCache(cm, com.hust.datn.domain.SysModule.class.getName());
             createCache(cm, com.hust.datn.domain.SysRoleModule.class.getName());
