@@ -84,7 +84,7 @@ public class MomoResource {
             try {
                 QueryStatusTransactionResponse queryStatusTransactionResponse = momoService.queryOrderMoMo(payResultDTO.getOrderId());
                 if(queryStatusTransactionResponse.getResultCode() == 0){
-                    orderTraceService.save(new OrderTraceDTO(payResultDTO.getOrderId(), Constants.ORDER_RESULT_MESSAGE.PAY_SUCCESS, gson.toJson(queryStatusTransactionResponse), Constants.ORDER_STATE.DA_THANH_TOAN, "admin", Instant.now()));
+                    orderTraceService.save(new OrderTraceDTO(payResultDTO.getOrderId(), Constants.ORDER_RESULT_MESSAGE.PAY_SUCCESS, gson.toJson(queryStatusTransactionResponse), Constants.ORDER_STATE.DA_THANH_TOAN, "admin"));
                     return ResponseEntity.ok().body(queryStatusTransactionResponse);
                 }
             } catch (Exception e){

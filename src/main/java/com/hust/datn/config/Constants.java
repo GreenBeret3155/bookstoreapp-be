@@ -1,5 +1,9 @@
 package com.hust.datn.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Application constants.
  */
@@ -42,6 +46,8 @@ public final class Constants {
         String PAY_SUCCESS = "Thanh toán thành công";
         String PAY_FAILED = "Thanh toán thất bại";
         String CREATE_ORDER = "Tạo đơn hàng thành công";
+        String CANCEL_SUCCESS = "Hủy đơn hàng thành công";
+        String CANCEL_FAILED = "Hủy đơn hàng thất bại";
     }
 
     public interface ORDER_STATE {
@@ -50,4 +56,10 @@ public final class Constants {
         Integer DA_THANH_TOAN = 2;
         Integer DA_HUY = 3;
     }
+
+    public interface ORDER_STATE_CLIENT_CONDITION {
+        List<Integer> DUOC_HUY = new ArrayList<>(Arrays.asList(ORDER_STATE.DANG_THANH_TOAN, ORDER_STATE.DANG_XU_LY, ORDER_STATE.DA_THANH_TOAN));
+    }
+
+
 }
