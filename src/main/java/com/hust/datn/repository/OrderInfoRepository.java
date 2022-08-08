@@ -14,9 +14,13 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Repository
 public interface OrderInfoRepository extends JpaRepository<OrderInfo, Long> {
-    List<OrderInfo> findAllByUserId(Long userId);
+    List<OrderInfo> findAllByUserIdAndStateNot(Long userId, Integer state);
 
     @Modifying
-    @Query(value = "update order_info set state = 0 where user_id = :userId", nativeQuery = true)
+    @Query(value = "update order_info set state = 0 where id = :id", nativeQuery = true)
+    void deleteOrderInfo(@Param("id") Long id);
+
+    @Modifying
+    @Query(value = "update order_info set state = 1 where user_id = :userId", nativeQuery = true)
     void resetStateAllOrderInfos(@Param("userId") Long userId);
 }

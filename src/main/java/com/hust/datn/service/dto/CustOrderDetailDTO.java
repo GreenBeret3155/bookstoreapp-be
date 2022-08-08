@@ -10,18 +10,19 @@ public class CustOrderDetailDTO {
     private OrderInfoDTO info;
     private List<OrderItemDTO> items;
     private List<CartItemDTO> cartItems;
+    private List<OrderTraceDTO> trace;
     private Long orderValue;
     private PaymentResponse paymentResponse;
 
     public CustOrderDetailDTO() {
     }
 
-    public CustOrderDetailDTO(CustOrderDTO order, OrderInfoDTO info, List<OrderItemDTO> items) {
-        Long v = 0l;
+    public CustOrderDetailDTO(CustOrderDTO order, OrderInfoDTO info, List<OrderItemDTO> items, List<OrderTraceDTO> trace) {
         this.order = order;
         this.info = info;
         this.items = items;
         this.orderValue = order.getAmount();
+        this.trace = trace;
     }
 
     public CustOrderDetailDTO(OrderInfoDTO orderInfoDTO, List<CartItemDTO> cartItemsList, Long orderId) {
@@ -75,5 +76,13 @@ public class CustOrderDetailDTO {
 
     public void setPaymentResponse(PaymentResponse paymentResponse) {
         this.paymentResponse = paymentResponse;
+    }
+
+    public List<OrderTraceDTO> getTrace() {
+        return trace;
+    }
+
+    public void setTrace(List<OrderTraceDTO> trace) {
+        this.trace = trace;
     }
 }

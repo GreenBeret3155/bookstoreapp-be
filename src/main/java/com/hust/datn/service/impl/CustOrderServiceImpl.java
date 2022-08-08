@@ -65,6 +65,14 @@ public class CustOrderServiceImpl implements CustOrderService {
         return custOrderRepository.findAllByUserIdOrderByOrderTimeDesc(userId).stream().map(custOrderMapper::toDto).collect(Collectors.toList());
     }
 
+    @Override
+    public Page<CustOrderDTO> findAllByState(Integer state, Pageable pageable) {
+        if(state == null){
+            return custOrderRepository.findAllByOrderByIdDesc(pageable).map(custOrderMapper::toDto);
+        }
+        return custOrderRepository.findAllByStateOrderByIdDesc(state,pageable).map(custOrderMapper::toDto);
+    }
+
 
     @Override
     @Transactional(readOnly = true)

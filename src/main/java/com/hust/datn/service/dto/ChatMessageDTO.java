@@ -69,12 +69,11 @@ public class ChatMessageDTO implements Serializable {
     public ChatMessageDTO() {
     }
 
-    public ChatMessageDTO(ChatBotReceiveMessage chatBotReceiveMessage, Long chatRoomId, Instant createdAt) {
+    public ChatMessageDTO(ChatBotReceiveMessage chatBotReceiveMessage, Long chatRoomId) {
         this.chatRoomId = chatRoomId;
         this.senderId = -99L;
         this.contentType = 1;
         this.content = chatBotReceiveMessage.getText();
-        this.createdAt = createdAt;
     }
 
     @Override

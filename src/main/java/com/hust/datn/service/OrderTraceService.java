@@ -5,6 +5,7 @@ import com.hust.datn.service.dto.OrderTraceDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,6 +28,8 @@ public interface OrderTraceService {
      * @return the list of entities.
      */
     Page<OrderTraceDTO> findAll(Pageable pageable);
+
+    List<OrderTraceDTO> findAllByOrderId(Long orderId);
 
 
     /**

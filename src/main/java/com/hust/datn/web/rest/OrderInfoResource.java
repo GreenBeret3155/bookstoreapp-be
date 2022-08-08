@@ -56,14 +56,17 @@ public class OrderInfoResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new orderInfoDTO, or with status {@code 400 (Bad Request)} if the orderInfo has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/order-infos")
+    @PostMapping("/create-order-info")
     public ResponseEntity<OrderInfoDTO> createOrderInfo(@RequestBody OrderInfoDTO orderInfoDTO) throws URISyntaxException {
         log.debug("REST request to save OrderInfo : {}", orderInfoDTO);
-        if (orderInfoDTO.getId() != null) {
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("Not found", "Not found", "Not found"));
+        if (orderInfoDTO.getId() != null || userId == null) {
             throw new BadRequestAlertException("A new orderInfo cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        orderInfoDTO.setUserId(userId);
+        orderInfoDTO.setState(1);
         OrderInfoDTO result = orderInfoService.save(orderInfoDTO);
-        return ResponseEntity.created(new URI("/api/order-infos/" + result.getId()))
+        return ResponseEntity.created(new URI("/api/create-order-info/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
@@ -144,10 +147,12 @@ public class OrderInfoResource {
      * @param id the id of the orderInfoDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/order-infos/{id}")
-    public ResponseEntity<Void> deleteOrderInfo(@PathVariable Long id) {
+    @PostMapping("/order-info-delete/{id}")
+    public ResponseEntity<List<OrderInfoDTO>> deleteOrderInfo(@PathVariable Long id) {
         log.debug("REST request to delete OrderInfo : {}", id);
         orderInfoService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("Not found", "Not found", "Not found"));
+        List<OrderInfoDTO> result = orderInfoService.findAllOrderInfosByUserId(userId);
+        return ResponseEntity.ok().body(result);
     }
 }

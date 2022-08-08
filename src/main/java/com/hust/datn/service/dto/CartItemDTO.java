@@ -13,6 +13,16 @@ public class CartItemDTO implements Serializable {
     private Integer quantity;
     private Integer isSelected;
 
+    public CartItemDTO() {
+    }
+
+    public CartItemDTO(Long cartId, Long productId, Integer quantity, Integer isSelected) {
+        this.cartId = cartId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.isSelected = isSelected;
+    }
+
     public Long getId() {
         return id;
     }

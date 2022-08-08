@@ -32,6 +32,8 @@ public interface CustOrderService {
 
     List<CustOrderDTO> findAllByUserId(Long userId);
 
+    Page<CustOrderDTO> findAllByState(Integer state, Pageable pageable);
+
 
     /**
      * Get the "id" custOrder.

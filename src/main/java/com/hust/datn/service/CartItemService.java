@@ -37,6 +37,8 @@ public interface CartItemService {
      */
     List<CartItemDTO> findAllByCartId(Long cartId);
 
+    List<CartItemDTO> findAllByCartIdSelected(Long cartId);
+
     /**
      * Get all the cartItems.
      *

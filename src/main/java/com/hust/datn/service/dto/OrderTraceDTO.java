@@ -19,13 +19,13 @@ public class OrderTraceDTO implements Serializable {
     public OrderTraceDTO() {
     }
 
-    public OrderTraceDTO(Long orderId, String description, String content, Integer state, String updateUser, Instant updateTime) {
+    public OrderTraceDTO(Long orderId, String description, String content, Integer state, String updateUser) {
         this.orderId = orderId;
         this.description = description;
         this.content = content;
         this.state = state;
         this.updateUser = updateUser;
-        this.updateTime = updateTime;
+        this.updateTime = Instant.now();
     }
 
     public Long getId() {

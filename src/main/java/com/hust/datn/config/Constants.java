@@ -41,6 +41,7 @@ public final class Constants {
     public interface ORDER_RESULT_MESSAGE {
         String PAY_SUCCESS = "Thanh toán thành công";
         String PAY_FAILED = "Thanh toán thất bại";
+        String CREATE_ORDER = "Tạo đơn hàng thành công";
     }
 
     public interface ORDER_STATE {

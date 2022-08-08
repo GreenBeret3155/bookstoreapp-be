@@ -69,6 +69,11 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
+    public List<CartItemDTO> findAllByCartIdSelected(Long cartId) {
+        return cartItemRepository.findAllByCartIdAndAndIsSelected(cartId, 1).stream().map(cartItemMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<CartItemDTO> findAll(Pageable pageable) {
         log.debug("Request to get all CartItems");

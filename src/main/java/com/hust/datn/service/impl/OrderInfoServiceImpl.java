@@ -46,9 +46,9 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
     @Override
     public OrderInfoDTO setDefaultOrderInfo(Long defaultOrderInfoId, Long userId) {
-        OrderInfo orderInfo = orderInfoRepository.findById(userId).orElseThrow(() -> new BadRequestAlertException("Not found", "Not found", "Not found"));
+        OrderInfo orderInfo = orderInfoRepository.findById(defaultOrderInfoId).orElseThrow(() -> new BadRequestAlertException("Not found", "Not found", "Not found"));
         orderInfoRepository.resetStateAllOrderInfos(userId);
-        orderInfo.setState(1);
+        orderInfo.setState(2);
         return orderInfoMapper.toDto(orderInfoRepository.save(orderInfo));
     }
 
@@ -62,7 +62,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
     @Override
     public List<OrderInfoDTO> findAllOrderInfosByUserId(Long userId) {
-        return orderInfoRepository.findAllByUserId(userId).stream().map(orderInfoMapper::toDto).collect(Collectors.toList());
+        return orderInfoRepository.findAllByUserIdAndStateNot(userId, 0).stream().map(orderInfoMapper::toDto).collect(Collectors.toList());
     }
 
 
@@ -77,6 +77,6 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete OrderInfo : {}", id);
-        orderInfoRepository.deleteById(id);
+        orderInfoRepository.deleteOrderInfo(id);
     }
 }

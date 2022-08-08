@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -88,6 +89,38 @@ public class CartResource {
         List<CartItemDTO> cartItemDTOSResult = cartItemService.saveCartItems(cartItemDTOS);
 
         return ResponseEntity.ok().body(cartItemDTOSResult);
+    }
+
+    @PostMapping("/bot-push-cart")
+    public ResponseEntity<ResponseMessageDTO> saveCartBot(@RequestBody BotRequestDTO botRequestDTO) throws URISyntaxException {
+        if(botRequestDTO.getUid() == null ||
+            botRequestDTO.getPid() == null ||
+            botRequestDTO.getQuantity() == null
+        ){
+            throw new BadRequestAlertException("null", "null", "null");
+        }
+        CartDTO cartDTO =  cartService.findOneByUserId(botRequestDTO.getUid()).orElse(null);
+        if(cartDTO == null){
+            cartDTO = cartService.save(new CartDTO(botRequestDTO.getUid()));
+        }
+        cartItemService.saveCartItems(new ArrayList<>(Arrays.asList(new CartItemDTO(cartDTO.getId(), botRequestDTO.getPid(), botRequestDTO.getQuantity(), 1))));
+
+        return ResponseEntity.ok().body(new ResponseMessageDTO(1, "Done"));
+    }
+
+    @GetMapping("/bot-get-cart")
+    public ResponseEntity<List<?>> getCartBot(@RequestParam Long uid) throws URISyntaxException {
+        CartDTO cartDTO = cartService.findOneByUserId(uid).orElse(null);
+        if(cartDTO == null){
+            return ResponseEntity.ok().body(new ArrayList<>());
+        }
+        List<CartItemDTO> listCartItems = cartItemService.findAllByCartIdSelected(cartDTO.getId());
+        List<CartItemDetailDTO> result = new ArrayList<>();
+        listCartItems.forEach(e -> {
+            ProductDTO productDTO = productService.findOne(e.getProductId()).orElse(new ProductDTO());
+            result.add(new CartItemDetailDTO(productDTO, e));
+        });
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping("/cart")

@@ -44,6 +44,7 @@ import java.net.URISyntaxException;
 import java.security.Principal;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 public class ChatController {
@@ -122,18 +123,14 @@ public class ChatController {
 
     @MessageMapping("/chat-bot")
     public void processMessageBot(@Payload ChatMessageDTO chatMessageDTO) throws IOException {
-        System.out.println("Room:" + chatMessageDTO.getChatRoomId());
-        Long userId = SecurityUtils.getCurrentUserId(userRepository).orElse(null);
-        if(chatMessageDTO.getSenderId() != userId){
-            return ;
-        }
-        chatMessageDTO.setCreatedAt(Instant.now());
-        chatMessageDTO.setId(null);
-        ChatMessageDTO saved = chatMessageService.save(chatMessageDTO);
-        saved.setId(null);
-        simpMessagingTemplate.convertAndSendToUser(String.valueOf(chatMessageDTO.getSenderId()),"/bot/messages",saved);
-        List<ChatBotReceiveMessage> chatBotReceiveMessage =  sentChatToBot(String.valueOf(saved.getChatRoomId()), saved.getContent());
-        simpMessagingTemplate.convertAndSendToUser(String.valueOf(saved.getChatRoomId()),"/bot/messages",chatBotReceiveMessage);
+        System.out.println("Room - bot:" + chatMessageDTO.getChatRoomId());
+
+        simpMessagingTemplate.convertAndSendToUser(String.valueOf(chatMessageDTO.getChatRoomId()),"/bot/messages",chatMessageDTO);
+        List<ChatBotReceiveMessage> chatBotReceiveMessage = sentChatToBot(String.valueOf(chatMessageDTO.getSenderId()), chatMessageDTO.getContent());
+        List<ChatMessageDTO> results = chatBotReceiveMessage.stream().map(e -> new ChatMessageDTO(e, chatMessageDTO.getChatRoomId())).collect(Collectors.toList());
+        results.forEach(e -> {
+            simpMessagingTemplate.convertAndSendToUser(String.valueOf(chatMessageDTO.getChatRoomId()),"/bot/messages",e);
+        });
     }
 
     private ChatRoomDTO getChatRoom(){
@@ -157,7 +154,7 @@ public class ChatController {
 
     private List<ChatBotReceiveMessage> sentChatToBot(String sender, String message) throws IOException {
         Response response = OkHttpRequestCommon.post(CB_URL,
-            "{ \"sender\" : \"" + "u_" + sender + "\"," + "\"message\" :\"" + message + "\" }",
+            "{ \"sender\" : \"" + sender + "\"," + "\"message\" :\"" + message + "\" }",
             Headers.of(new HashMap<String, String>() {{
                 put("Accept", APPLICATION_JSON_VALUE);
                 put("Content-Type", APPLICATION_JSON_VALUE);

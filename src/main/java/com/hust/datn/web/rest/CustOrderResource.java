@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,6 +57,9 @@ public class CustOrderResource {
 
     @Autowired
     private CartItemService cartItemService;
+
+    @Autowired
+    private OrderTraceService orderTraceService;
 
     @Autowired
     private UserRepository userRepository;
@@ -111,6 +116,9 @@ public class CustOrderResource {
         if(result.getPaymentType() == Constants.PAYMENT_TYPE.MOMO){
             PaymentResponse paymentResponse = momoService.createOrderPayRequest(result);
             custOrderDetailDTO.setPaymentResponse(paymentResponse);
+            orderTraceService.save(new OrderTraceDTO(result.getId(), Constants.ORDER_RESULT_MESSAGE.CREATE_ORDER, null, Constants.ORDER_STATE.DANG_THANH_TOAN, "system"));
+        } else {
+            orderTraceService.save(new OrderTraceDTO(result.getId(), Constants.ORDER_RESULT_MESSAGE.CREATE_ORDER, null, Constants.ORDER_STATE.DANG_XU_LY, "system"));
         }
         return ResponseEntity.created(new URI("/order/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -145,7 +153,8 @@ public class CustOrderResource {
         List<CustOrderDetailDTO> orderDetailDTOS = result.stream().map(e -> {
             OrderInfoDTO orderInfoDTO = orderInfoService.findOne(e.getOrderInfoId()).orElse(null);
             List<OrderItemDTO> orderItemDTOS = orderItemService.findAllByOrderId(e.getId());
-            return new CustOrderDetailDTO(e, orderInfoDTO, orderItemDTOS);
+            List<OrderTraceDTO> orderTraceDTOS = orderTraceService.findAllByOrderId(e.getId());
+            return new CustOrderDetailDTO(e, orderInfoDTO, orderItemDTOS, orderTraceDTOS);
         }).collect(Collectors.toList());
         return ResponseEntity.ok().body(orderDetailDTOS);
     }
@@ -154,12 +163,24 @@ public class CustOrderResource {
     public ResponseEntity<CustOrderDetailDTO> getCustOrderByUser(@PathVariable() Long id) throws NotFoundException {
         Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
         CustOrderDTO result = custOrderService.findOne(id).orElseThrow(() -> new NotFoundException(ENTITY_NAME + id));
-        if(!result.getUserId().equals(userId)){
-            throw new NotFoundException(ENTITY_NAME + id);
-        }
+//        if(!result.getUserId().equals(userId)){
+//            throw new NotFoundException(ENTITY_NAME + id);
+//        }
         OrderInfoDTO orderInfoDTO = orderInfoService.findOne(result.getOrderInfoId()).orElse(null);
         List<OrderItemDTO> orderItemDTOS = orderItemService.findAllByOrderId(result.getId());
-        return ResponseEntity.ok().body(new CustOrderDetailDTO(result, orderInfoDTO, orderItemDTOS));
+        List<OrderTraceDTO> orderTraceDTOS = orderTraceService.findAllByOrderId(result.getId());
+        return ResponseEntity.ok().body(new CustOrderDetailDTO(result, orderInfoDTO, orderItemDTOS, orderTraceDTOS));
+    }
+
+    @PostMapping("/order-detail/query")
+    public ResponseEntity<?> queryCustOrder(@RequestBody CustOrderDTO custOrderDTO, Pageable pageable) throws NotFoundException {
+        if(custOrderDTO.getId() != null){
+            CustOrderDTO result = custOrderService.findOne(custOrderDTO.getId()).orElseThrow(() -> new NotFoundException(ENTITY_NAME + custOrderDTO.getId()));
+            return ResponseEntity.ok().body(new ArrayList<>(Arrays.asList(result)));
+        }
+        Page<CustOrderDTO> page = custOrderService.findAllByState(custOrderDTO.getState(), pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
