@@ -7,8 +7,10 @@ import com.hust.datn.repository.AuthorityRepository;
 import com.hust.datn.repository.UserRepository;
 import com.hust.datn.security.AuthoritiesConstants;
 import com.hust.datn.security.SecurityUtils;
+import com.hust.datn.service.dto.ChangePassDTO;
 import com.hust.datn.service.dto.UserDTO;
 
+import com.hust.datn.service.dto.UserSearchDTO;
 import io.github.jhipster.security.RandomUtil;
 
 import org.slf4j.Logger;
@@ -115,6 +117,7 @@ public class UserService {
         // new user is not active
         newUser.setActivated(false);
         // new user gets registration key
+        newUser.setPhone(userDTO.getPhone());
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
@@ -153,6 +156,7 @@ public class UserService {
         newUser.setImageUrl(userDTO.getImageUrl());
         newUser.setLangKey(userDTO.getLangKey());
         newUser.setActivated(true);
+        newUser.setPhone(userDTO.getPhone());
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         Set<Authority> authorities = new HashSet<>();
@@ -193,6 +197,7 @@ public class UserService {
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(Instant.now());
         user.setActivated(true);
+        user.setPhone(userDTO.getPhone());
         if (userDTO.getAuthorities() != null) {
             Set<Authority> authorities = userDTO.getAuthorities().stream()
                 .map(authorityRepository::findById)
@@ -229,6 +234,7 @@ public class UserService {
                 user.setImageUrl(userDTO.getImageUrl());
                 user.setActivated(userDTO.isActivated());
                 user.setLangKey(userDTO.getLangKey());
+                user.setPhone(userDTO.getPhone());
                 Set<Authority> managedAuthorities = user.getAuthorities();
                 managedAuthorities.clear();
                 userDTO.getAuthorities().stream()
@@ -339,5 +345,31 @@ public class UserService {
         if (user.getEmail() != null) {
             Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE)).evict(user.getEmail());
         }
+    }
+
+    public Page<UserDTO> queryUser(UserSearchDTO userSearchDTO, Pageable pageable){
+        return userRepository.queryUser(userSearchDTO.getAuthorities(), userSearchDTO.getKeyword(), pageable).map(e -> new UserDTO(e));
+    }
+
+    public Optional<UserDTO> updateStatusUser(UserDTO userDTO) {
+        return Optional.of(userRepository
+                .findById(userDTO.getId()))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(user -> {
+                this.clearUserCaches(user);
+                user.setActivated(userDTO.isActivated());
+                return user;
+            })
+            .map(UserDTO::new);
+    }
+
+    public void adminChangePass(ChangePassDTO changePassDTO) throws Exception{
+        userRepository.findOneByLogin(changePassDTO.getCurrentPassword()).ifPresent(user -> {
+            String encryptedPassword = passwordEncoder.encode(changePassDTO.getPassword());
+            user.setPassword(encryptedPassword);
+            this.clearUserCaches(user);
+            log.debug("Changed password for User: {}", user);
+        });
     }
 }

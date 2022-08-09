@@ -51,6 +51,8 @@ public class UserDTO {
 
     private String avatar;
 
+    private String phone;
+
     private Set<String> authorities;
 
     private List<SysModuleDTO> modules;
@@ -73,6 +75,7 @@ public class UserDTO {
         this.lastModifiedBy = user.getLastModifiedBy();
         this.lastModifiedDate = user.getLastModifiedDate();
         this.avatar = user.getAvatar();
+        this.phone = user.getPhone();
         this.authorities = user.getAuthorities().stream()
             .map(Authority::getName)
             .collect(Collectors.toSet());
@@ -180,6 +183,14 @@ public class UserDTO {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public Set<String> getAuthorities() {

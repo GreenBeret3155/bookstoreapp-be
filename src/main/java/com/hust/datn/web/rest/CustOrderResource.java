@@ -1,5 +1,6 @@
 package com.hust.datn.web.rest;
 
+import com.google.gson.Gson;
 import com.hust.datn.config.Constants;
 import com.hust.datn.repository.UserRepository;
 import com.hust.datn.security.SecurityUtils;
@@ -66,6 +67,8 @@ public class CustOrderResource {
 
     @Autowired
     private MomoService momoService;
+
+    Gson gson = new Gson();
 
     private final CustOrderService custOrderService;
 
@@ -189,7 +192,11 @@ public class CustOrderResource {
         String userLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
         if(changeStateDTO.getNewState().equals(Constants.ORDER_STATE.DA_HUY)){
             if(Constants.ORDER_STATE_CLIENT_CONDITION.DUOC_HUY.contains(custOrderDTO.getState())){
-                orderTraceService.save(new OrderTraceDTO(changeStateDTO.getOrderId(), Constants.ORDER_RESULT_MESSAGE.CANCEL_SUCCESS, null, Constants.ORDER_STATE.DA_HUY, userLogin));
+                if(custOrderDTO.getPaymentType().equals(Constants.PAYMENT_TYPE.COD)){
+                    orderTraceService.save(new OrderTraceDTO(changeStateDTO.getOrderId(), Constants.ORDER_RESULT_MESSAGE.CANCEL_SUCCESS, gson.toJson(changeStateDTO), Constants.ORDER_STATE.DA_HUY, userLogin));
+                } else {
+                    orderTraceService.save(new OrderTraceDTO(changeStateDTO.getOrderId(), Constants.ORDER_RESULT_MESSAGE.CANCEL_REQUEST_SUCCESS, gson.toJson(changeStateDTO), Constants.ORDER_STATE.YEU_CAU_HUY, userLogin));
+                }
                 return ResponseEntity.ok().body(new ResponseMessageDTO(1, Constants.ORDER_RESULT_MESSAGE.CANCEL_SUCCESS));
             }
             return ResponseEntity.badRequest().body(new ResponseMessageDTO(0, Constants.ORDER_RESULT_MESSAGE.CANCEL_FAILED));

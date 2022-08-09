@@ -48,6 +48,7 @@ public final class Constants {
         String CREATE_ORDER = "Tạo đơn hàng thành công";
         String CANCEL_SUCCESS = "Hủy đơn hàng thành công";
         String CANCEL_FAILED = "Hủy đơn hàng thất bại";
+        String CANCEL_REQUEST_SUCCESS = "Tạo yêu cầu hủy đơn hàng thành công";
     }
 
     public interface ORDER_STATE {
@@ -55,6 +56,10 @@ public final class Constants {
         Integer DANG_XU_LY = 1;
         Integer DA_THANH_TOAN = 2;
         Integer DA_HUY = 3;
+        Integer DA_XAC_NHAN = 4;
+        Integer DANG_GIAO_HANG = 5;
+        Integer DA_GIAO_HANG = 6;
+        Integer YEU_CAU_HUY = 7;
     }
 
     public interface ORDER_STATE_CLIENT_CONDITION {

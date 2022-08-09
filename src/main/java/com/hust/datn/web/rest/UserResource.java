@@ -6,7 +6,9 @@ import com.hust.datn.repository.UserRepository;
 import com.hust.datn.security.AuthoritiesConstants;
 import com.hust.datn.service.MailService;
 import com.hust.datn.service.UserService;
+import com.hust.datn.service.dto.ChangePassDTO;
 import com.hust.datn.service.dto.UserDTO;
+import com.hust.datn.service.dto.UserSearchDTO;
 import com.hust.datn.web.rest.errors.BadRequestAlertException;
 import com.hust.datn.web.rest.errors.EmailAlreadyUsedException;
 import com.hust.datn.web.rest.errors.LoginAlreadyUsedException;
@@ -185,5 +187,28 @@ public class UserResource {
         log.debug("REST request to delete User: {}", login);
         userService.deleteUser(login);
         return ResponseEntity.noContent().headers(HeaderUtil.createAlert(applicationName,  "userManagement.deleted", login)).build();
+    }
+
+    @PostMapping("/users/query")
+    public ResponseEntity<List<UserDTO>> queryUser(@RequestBody UserSearchDTO userSearchDTO, Pageable pageable) {
+        final Page<UserDTO> page = userService.queryUser(userSearchDTO, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @PutMapping("/users/updateStatus")
+    public ResponseEntity<UserDTO> updateStatus(@Valid @RequestBody UserDTO userDTO) {
+        log.debug("REST request to update User : {}", userDTO);
+
+        Optional<UserDTO> updatedUser = userService.updateStatusUser(userDTO);
+
+        return ResponseUtil.wrapOrNotFound(updatedUser,
+            HeaderUtil.createAlert(applicationName, "userManagement.updated", userDTO.getLogin()));
+    }
+
+    @PostMapping("/users/adminChangePass")
+    public ResponseEntity<Void> adminChangePass(@RequestBody ChangePassDTO changePassDTO) throws Exception {
+        userService.adminChangePass(changePassDTO);
+        return ResponseEntity.noContent().build();
     }
 }

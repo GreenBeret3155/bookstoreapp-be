@@ -84,6 +84,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private Instant resetDate = null;
 
     private String avatar;
+    private String phone;
 
     @JsonIgnore
     @ManyToMany
@@ -191,6 +192,14 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getLangKey() {
