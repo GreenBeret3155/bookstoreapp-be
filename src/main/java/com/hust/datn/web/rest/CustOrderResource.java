@@ -174,6 +174,15 @@ public class CustOrderResource {
         return ResponseEntity.ok().body(new CustOrderDetailDTO(result, orderInfoDTO, orderItemDTOS, orderTraceDTOS));
     }
 
+    @GetMapping("/bot-order-detail/{id}")
+    public ResponseEntity<CustOrderDetailDTO> getCustOrderBotByUser(@PathVariable() Long id) throws NotFoundException {
+        CustOrderDTO result = custOrderService.findOne(id).orElseThrow(() -> new NotFoundException(ENTITY_NAME + id));
+        OrderInfoDTO orderInfoDTO = orderInfoService.findOne(result.getOrderInfoId()).orElse(null);
+        List<OrderItemDTO> orderItemDTOS = orderItemService.findAllByOrderId(result.getId());
+        List<OrderTraceDTO> orderTraceDTOS = orderTraceService.findAllByOrderId(result.getId());
+        return ResponseEntity.ok().body(new CustOrderDetailDTO(result, orderInfoDTO, orderItemDTOS, orderTraceDTOS));
+    }
+
     @PostMapping("/order-detail/query")
     public ResponseEntity<?> queryCustOrder(@RequestBody CustOrderDTO custOrderDTO, Pageable pageable) throws NotFoundException {
         if(custOrderDTO.getId() != null){
