@@ -14,4 +14,8 @@ import java.util.List;
 @Repository
 public interface OrderTraceRepository extends JpaRepository<OrderTrace, Long> {
     List<OrderTrace> findAllByOrderIdOrderByUpdateTimeDesc(Long orderId);
+
+    OrderTrace findFirstByOrderIdOrderByUpdateTimeDesc(Long orderId);
+
+    OrderTrace findFirstByOrderIdAndStateOrderByUpdateTimeDesc(Long orderId, Integer state);
 }

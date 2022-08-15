@@ -9,6 +9,7 @@ import com.hust.datn.service.dto.*;
 import com.hust.datn.web.rest.errors.BadRequestAlertException;
 
 import com.mservice.models.PaymentResponse;
+import com.mservice.models.RefundMoMoResponse;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
@@ -27,11 +28,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * REST controller for managing {@link com.hust.datn.domain.CustOrder}.
@@ -119,9 +118,9 @@ public class CustOrderResource {
         if(result.getPaymentType() == Constants.PAYMENT_TYPE.MOMO){
             PaymentResponse paymentResponse = momoService.createOrderPayRequest(result);
             custOrderDetailDTO.setPaymentResponse(paymentResponse);
-            orderTraceService.save(new OrderTraceDTO(result.getId(), Constants.ORDER_RESULT_MESSAGE.CREATE_ORDER, null, Constants.ORDER_STATE.DANG_THANH_TOAN, "system"));
+            orderTraceService.save(new OrderTraceDTO(result.getId(), Constants.ORDER_RESULT_MESSAGE.CREATE_ORDER, gson.toJson(paymentResponse), Constants.DANG_THANH_TOAN, "system"));
         } else {
-            orderTraceService.save(new OrderTraceDTO(result.getId(), Constants.ORDER_RESULT_MESSAGE.CREATE_ORDER, null, Constants.ORDER_STATE.DANG_XU_LY, "system"));
+            orderTraceService.save(new OrderTraceDTO(result.getId(), Constants.ORDER_RESULT_MESSAGE.CREATE_ORDER, null, Constants.DANG_XU_LY, "system"));
         }
         return ResponseEntity.created(new URI("/order/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -186,22 +185,133 @@ public class CustOrderResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @PostMapping("/order-detail/state")
-    public ResponseEntity<?> changeStateCustOrder(@RequestBody ChangeStateDTO changeStateDTO) throws NotFoundException {
-        CustOrderDTO custOrderDTO = custOrderService.findOne(changeStateDTO.getOrderId()).orElseThrow(() -> new NotFoundException(ENTITY_NAME + changeStateDTO.getOrderId()));
-        String userLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
-        if(changeStateDTO.getNewState().equals(Constants.ORDER_STATE.DA_HUY)){
-            if(Constants.ORDER_STATE_CLIENT_CONDITION.DUOC_HUY.contains(custOrderDTO.getState())){
-                if(custOrderDTO.getPaymentType().equals(Constants.PAYMENT_TYPE.COD)){
-                    orderTraceService.save(new OrderTraceDTO(changeStateDTO.getOrderId(), Constants.ORDER_RESULT_MESSAGE.CANCEL_SUCCESS, gson.toJson(changeStateDTO), Constants.ORDER_STATE.DA_HUY, userLogin));
-                } else {
-                    orderTraceService.save(new OrderTraceDTO(changeStateDTO.getOrderId(), Constants.ORDER_RESULT_MESSAGE.CANCEL_REQUEST_SUCCESS, gson.toJson(changeStateDTO), Constants.ORDER_STATE.YEU_CAU_HUY, userLogin));
-                }
-                return ResponseEntity.ok().body(new ResponseMessageDTO(1, Constants.ORDER_RESULT_MESSAGE.CANCEL_SUCCESS));
-            }
-            return ResponseEntity.badRequest().body(new ResponseMessageDTO(0, Constants.ORDER_RESULT_MESSAGE.CANCEL_FAILED));
+    @PostMapping("/order-detail/cancel")
+    public ResponseEntity<?> cancelCustOrder(@RequestBody CustOrderDTO custOrderDTO) throws NotFoundException {
+        if(custOrderDTO.getId() == null){
+            throw new BadRequestAlertException("Id null", "Id null", "Id null");
         }
-        return ResponseEntity.badRequest().body(null);
+        CustOrderDTO custOrderDTO1 = custOrderService.findOne(custOrderDTO.getId()).orElseThrow(() -> new NotFoundException(ENTITY_NAME + custOrderDTO.getId()));
+        String userLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
+        if(Constants.ORDER_STATE_CLIENT_CONDITION.DUOC_HUY.contains(custOrderDTO1.getState())){
+            orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), Constants.ORDER_RESULT_MESSAGE.CANCEL_SUCCESS, gson.toJson(custOrderDTO1), Constants.DA_HUY, userLogin));
+            return ResponseEntity.ok().body(new ResponseMessageDTO(1, Constants.ORDER_RESULT_MESSAGE.CANCEL_SUCCESS));
+        }
+        if(Constants.ORDER_STATE_CLIENT_CONDITION.YEU_CAU_HUY.contains(custOrderDTO1.getState())){
+            if(custOrderDTO1.getPaymentType().equals(Constants.PAYMENT_TYPE.COD)){
+                orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), Constants.ORDER_RESULT_MESSAGE.CANCEL_SUCCESS, gson.toJson(custOrderDTO1), Constants.DA_HUY, userLogin));
+            } else {
+                orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), Constants.ORDER_RESULT_MESSAGE.CANCEL_REQUEST_SUCCESS, gson.toJson(custOrderDTO1), Constants.YEU_CAU_HUY, userLogin));
+            }
+            return ResponseEntity.ok().body(new ResponseMessageDTO(1, Constants.ORDER_RESULT_MESSAGE.CANCEL_SUCCESS));
+        }
+        return ResponseEntity.badRequest().body(new ResponseMessageDTO(0, Constants.ORDER_RESULT_MESSAGE.CANCEL_FAILED));
+    }
+
+    @PostMapping("/order-detail/get-next-state")
+    public ResponseEntity<?> getNextStateCustOrder(@RequestBody CustOrderDTO custOrderDTO) throws NotFoundException {
+        if(custOrderDTO.getId() == null){
+            throw new BadRequestAlertException("Id null", "Id null", "Id null");
+        }
+        CustOrderDTO custOrderDTO1 = custOrderService.findOne(custOrderDTO.getId()).orElseThrow(() -> new NotFoundException(ENTITY_NAME + custOrderDTO.getId()));
+        for (Map.Entry<Integer, List<Integer>> set : Constants.NEXT_STATE.entrySet()) {
+            if(custOrderDTO1.getState().equals(set.getKey())){
+                return ResponseEntity.ok().body(set.getValue());
+            }
+        }
+        return ResponseEntity.badRequest().body(new ResponseMessageDTO(0, "Không có hành động tiếp theo"));
+    }
+
+    @PostMapping("/order-detail/next")
+    public ResponseEntity<?> handleNextStateCustOrder(@RequestBody OrderTraceDTO orderTraceDTO) throws NotFoundException {
+        if(orderTraceDTO.getOrderId() == null ||
+            orderTraceDTO.getState() == null ||
+            orderTraceDTO.getDescription() == null
+        ){
+            throw new BadRequestAlertException("Null", "Null", "Null");
+        }
+        CustOrderDTO custOrderDTO1 = custOrderService.findOne(orderTraceDTO.getOrderId()).orElseThrow(() -> new NotFoundException(ENTITY_NAME + orderTraceDTO.getOrderId()));
+        String userLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
+        for (Map.Entry<Integer, List<Integer>> set : Constants.NEXT_STATE.entrySet()) {
+            if(custOrderDTO1.getState().equals(set.getKey()) && !set.getValue().contains(orderTraceDTO.getState())){
+                return ResponseEntity.badRequest().body(new ResponseMessageDTO(0, "Trạng thái không hợp lệ"));
+            }
+        }
+        if(orderTraceDTO.getState().equals(Constants.DA_HUY)){
+            OrderTraceDTO res = new OrderTraceDTO();
+            switch (custOrderDTO1.getState()){
+                case Constants.DA_THANH_TOAN:
+                    res = orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), orderTraceDTO.getDescription(), orderTraceDTO.getContent(), Constants.DA_HUY, userLogin));
+                    break;
+                case Constants.DANG_XU_LY:
+                    res = orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), orderTraceDTO.getDescription(), orderTraceDTO.getContent(), Constants.DA_HUY, userLogin));
+                    break;
+                case Constants.DA_XAC_NHAN:
+                    res = orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), orderTraceDTO.getDescription(), orderTraceDTO.getContent(), Constants.DA_HUY, userLogin));
+                    break;
+                case Constants.DANG_GIAO_HANG:
+                    res = orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), orderTraceDTO.getDescription(), orderTraceDTO.getContent(), Constants.DA_HUY, userLogin));
+                    break;
+                case Constants.YEU_CAU_HUY:
+                    //hoan tien
+                    RefundMoMoResponse refundMoMoResponse = handleRefund(custOrderDTO1);
+                    if(refundMoMoResponse.getResultCode() == 0){
+                        res = orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), Constants.ORDER_RESULT_MESSAGE.REFUND_SUCCESS, gson.toJson(refundMoMoResponse), Constants.DA_HUY, userLogin));
+                    } else {
+                        return ResponseEntity.badRequest().body(refundMoMoResponse);
+                    }
+                    break;
+            }
+            return ResponseEntity.ok().body(res);
+
+        }
+        OrderTraceDTO res = new OrderTraceDTO();
+        switch (custOrderDTO1.getState()){
+            case Constants.DA_THANH_TOAN:
+                res = orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), orderTraceDTO.getDescription(), orderTraceDTO.getContent(), Constants.DA_XAC_NHAN, userLogin));
+                break;
+            case Constants.DANG_XU_LY:
+                res = orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), orderTraceDTO.getDescription(), orderTraceDTO.getContent(), Constants.DA_XAC_NHAN, userLogin));
+                break;
+            case Constants.DA_XAC_NHAN:
+                res = orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), orderTraceDTO.getDescription(), orderTraceDTO.getContent(), Constants.DANG_GIAO_HANG, userLogin));
+                break;
+            case Constants.DANG_GIAO_HANG:
+                res = orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), orderTraceDTO.getDescription(), orderTraceDTO.getContent(), Constants.DA_GIAO_HANG, userLogin));
+                break;
+            case Constants.YEU_CAU_HUY:
+                res = orderTraceService.save(new OrderTraceDTO(custOrderDTO1.getId(), orderTraceDTO.getDescription(), orderTraceDTO.getContent(), Constants.DANG_XU_LY, userLogin));
+                break;
+        }
+        return ResponseEntity.ok().body(res);
+//        return ResponseEntity.badRequest().body(null);
+    }
+
+    private RefundMoMoResponse handleRefund(CustOrderDTO oldOrderState){
+        OrderTraceDTO orderTraceDTO = orderTraceService.findLastByOrderIdAndState(oldOrderState.getId(), Constants.ORDER_STATE.DA_THANH_TOAN);
+        try{
+            RefundMoMoResponse refundMoMoResponse = momoService.refundTrans(oldOrderState, orderTraceDTO);
+            return refundMoMoResponse;
+        } catch (Exception e){
+            log.error(e.toString());
+        }
+        return null;
+    }
+
+    @PostMapping("/order-detail/test")
+    public ResponseEntity<?> testMomo(@RequestBody CustOrderDTO custOrderDTO) throws Exception {
+        if(custOrderDTO.getId() == null||
+            custOrderDTO.getState() == null
+        ){
+            throw new BadRequestAlertException("Null", "Null", "Null");
+        }
+        CustOrderDTO custOrderDTO1 = custOrderService.findOne(custOrderDTO.getId()).orElseThrow(() -> new NotFoundException(ENTITY_NAME + custOrderDTO.getId()));
+        OrderTraceDTO orderTraceDTO = orderTraceService.findLastByOrderId(custOrderDTO1.getId());
+        try{
+            momoService.refundTrans(custOrderDTO1, orderTraceDTO);
+        } catch (Exception e){
+            log.error(e.toString());
+        }
+        return ResponseEntity.ok().body(null);
     }
 
     /**

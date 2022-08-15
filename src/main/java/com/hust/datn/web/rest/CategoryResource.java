@@ -98,6 +98,12 @@ public class CategoryResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @GetMapping("/categories/leaf")
+    public ResponseEntity<List<CategoryDTO>> getAllLeafCategories() {
+        List<CategoryDTO> result = categoryService.findAllLeaf();
+        return ResponseEntity.ok().body(result);
+    }
+
     /**
      * {@code GET  /categories/:id} : get the "id" category.
      *

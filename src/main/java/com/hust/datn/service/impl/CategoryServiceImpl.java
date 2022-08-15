@@ -13,7 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing {@link Category}.
@@ -47,6 +49,11 @@ public class CategoryServiceImpl implements CategoryService {
         log.debug("Request to get all Categories");
         return categoryRepository.findAll(pageable)
             .map(categoryMapper::toDto);
+    }
+
+    @Override
+    public List<CategoryDTO> findAllLeaf() {
+        return categoryRepository.findAllByIsLeaf(1).stream().map(categoryMapper::toDto).collect(Collectors.toList());
     }
 
 

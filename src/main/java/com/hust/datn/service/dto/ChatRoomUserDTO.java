@@ -12,6 +12,15 @@ public class ChatRoomUserDTO implements Serializable {
     private Long userId;
     private Integer isClient;
 
+    public ChatRoomUserDTO() {
+    }
+
+    public ChatRoomUserDTO(Long chatRoomId, Long userId, Integer isClient) {
+        this.chatRoomId = chatRoomId;
+        this.userId = userId;
+        this.isClient = isClient;
+    }
+
     public Long getId() {
         return id;
     }

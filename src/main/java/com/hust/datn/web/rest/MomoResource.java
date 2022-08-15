@@ -58,11 +58,17 @@ public class MomoResource {
             throw new BadRequestAlertException("Id null", ENTITY_NAME, "Id null");
         }
         CustOrderDTO custOrderDTO1 = custOrderService.findOne(custOrderDTO.getId()).orElseThrow(() -> new NotFoundException("Order"));
-        if(custOrderDTO1.getPaymentType() == Constants.PAYMENT_TYPE.MOMO){
+        if(!custOrderDTO1.getState().equals(Constants.DANG_THANH_TOAN)){
+            return ResponseEntity.badRequest().body(new ResponseMessageDTO(0, "Đơn hàng trong trạng thái không thể thanh toán"));
+        }
+        if(custOrderDTO1.getPaymentType().equals(Constants.PAYMENT_TYPE.MOMO)){
             try {
                 PaymentResponse paymentResponse = momoService.createOrderMoMo(custOrderDTO1.getId(), custOrderDTO1.getAmount());
                 if(paymentResponse.getResultCode() == 0){
-                    return ResponseEntity.ok().body(paymentResponse);
+                    CustOrderDetailDTO custOrderDetailDTO = new CustOrderDetailDTO();
+                    custOrderDetailDTO.setOrder(custOrderDTO1);
+                    custOrderDetailDTO.setPaymentResponse(paymentResponse);
+                    return ResponseEntity.ok().body(custOrderDetailDTO);
                 }
                 throw new BadRequestAlertException(paymentResponse.getMessage(), ENTITY_NAME, String.valueOf(paymentResponse.getResultCode()));
             } catch (Exception e){
@@ -72,6 +78,29 @@ public class MomoResource {
             return ResponseEntity.badRequest().body(new PaymentResponse(-1, "Đơn hàng không được thanh toán theo phương thức này"));
         }
     }
+//    @PostMapping("/pay")
+//    public ResponseEntity<?> createOrderPayRequest(@RequestBody CustOrderDTO custOrderDTO) throws Exception {
+//        if (custOrderDTO.getId() == null) {
+//            throw new BadRequestAlertException("Id null", ENTITY_NAME, "Id null");
+//        }
+//        CustOrderDTO custOrderDTO1 = custOrderService.findOne(custOrderDTO.getId()).orElseThrow(() -> new NotFoundException("Order"));
+//        if(custOrderDTO1.getPaymentType() == Constants.PAYMENT_TYPE.MOMO){
+//            OrderTraceDTO orderTraceDTO = orderTraceService.findLastByOrderId(custOrderDTO1.getId());
+//            PaymentResponse oldPaymentResponse = gson.fromJson(orderTraceDTO.getContent(), PaymentResponse.class);
+//            if(oldPaymentResponse == null ||
+//                oldPaymentResponse.getResultCode() != 0 ||
+//                oldPaymentResponse.getPayUrl() == null
+//            ){
+//                throw new BadRequestAlertException("Null", ENTITY_NAME, "Null");
+//            }
+//            CustOrderDetailDTO custOrderDetailDTO = new CustOrderDetailDTO();
+//            custOrderDetailDTO.setOrder(custOrderDTO1);
+//            custOrderDetailDTO.setPaymentResponse(oldPaymentResponse);
+//            return ResponseEntity.ok().body(custOrderDetailDTO);
+//        } else {
+//            return ResponseEntity.badRequest().body(new PaymentResponse(-1, "Đơn hàng không được thanh toán theo phương thức này"));
+//        }
+//    }
 
     @PostMapping("/check-transaction")
     public ResponseEntity<?> getPayResult(@RequestBody PayResultDTO payResultDTO) throws Exception {
@@ -84,7 +113,7 @@ public class MomoResource {
             try {
                 QueryStatusTransactionResponse queryStatusTransactionResponse = momoService.queryOrderMoMo(payResultDTO.getOrderId());
                 if(queryStatusTransactionResponse.getResultCode() == 0){
-                    orderTraceService.save(new OrderTraceDTO(payResultDTO.getOrderId(), Constants.ORDER_RESULT_MESSAGE.PAY_SUCCESS, gson.toJson(queryStatusTransactionResponse), Constants.ORDER_STATE.DA_THANH_TOAN, "admin"));
+                    orderTraceService.save(new OrderTraceDTO(payResultDTO.getOrderId(), Constants.ORDER_RESULT_MESSAGE.PAY_SUCCESS, gson.toJson(queryStatusTransactionResponse), Constants.DA_THANH_TOAN, "admin"));
                     return ResponseEntity.ok().body(queryStatusTransactionResponse);
                 }
             } catch (Exception e){

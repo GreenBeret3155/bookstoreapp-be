@@ -14,9 +14,11 @@ import com.mservice.enums.RequestType;
 import com.mservice.models.ConfirmResponse;
 import com.mservice.models.PaymentResponse;
 import com.mservice.models.QueryStatusTransactionResponse;
+import com.mservice.models.RefundMoMoResponse;
 import com.mservice.processor.ConfirmTransaction;
 import com.mservice.processor.CreateOrderMoMo;
 import com.mservice.processor.QueryTransactionStatus;
+import com.mservice.processor.RefundTransaction;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,5 +93,14 @@ public class MomoService {
     public QueryStatusTransactionResponse queryOrderMoMo(Long orderId) throws Exception {
         QueryStatusTransactionResponse queryStatusTransactionResponse = QueryTransactionStatus.process(environment, String.valueOf(orderId), String.valueOf(orderId));
         return queryStatusTransactionResponse;
+    }
+
+    public RefundMoMoResponse refundTrans(CustOrderDTO custOrderDTO, OrderTraceDTO orderTraceDTO) throws Exception {
+        QueryStatusTransactionResponse queryStatusTransactionResponse = gson.fromJson(orderTraceDTO.getContent(),QueryStatusTransactionResponse.class);
+        if(queryStatusTransactionResponse.getResultCode() == 0){
+            RefundMoMoResponse refundMoMoResponse = RefundTransaction.process(environment, Long.toString(orderTraceDTO.getId()), Long.toString(orderTraceDTO.getId()), Long.toString(custOrderDTO.getAmount()), queryStatusTransactionResponse.getTransId(), "");
+            return refundMoMoResponse;
+        }
+        return null;
     }
 }

@@ -8,11 +8,13 @@ import com.hust.datn.security.SecurityUtils;
 import com.hust.datn.service.ChatMessageService;
 import com.hust.datn.service.ChatRoomService;
 import com.hust.datn.service.ChatRoomUserService;
+import com.hust.datn.service.UserService;
 import com.hust.datn.service.dto.*;
 import com.hust.datn.service.impl.AuthorServiceImpl;
 import com.hust.datn.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
+import javassist.NotFoundException;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.Response;
@@ -64,6 +66,8 @@ public class ChatController {
     private ChatRoomUserService chatRoomUserService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
 
     public ChatController(Environment env) {
         this.CB_URL = env.getProperty("botchat.baseurl") + env.getProperty("botchat.webhook");
@@ -115,9 +119,12 @@ public class ChatController {
         ChatMessageDTO saved = chatMessageService.save(chatMessageDTO);
         saved.setId(null);
         log.debug(saved.getContent());
-        simpMessagingTemplate.convertAndSendToUser("1","/notification",
-            new NotificationDTO(Constants.NOTIFICATION_TYPE.UPDATE_ROOM,new ChatRoomDTO(chatMessageDTO.getChatRoomId(), now, saved.getContent()), null)
-        );
+        List<Long> listAdminId = chatRoomUserService.findAllByRoomIdNotClient(chatMessageDTO.getChatRoomId()).stream().map(ChatRoomUserDTO::getUserId).collect(Collectors.toList());
+        for(Long adminId : listAdminId){
+            simpMessagingTemplate.convertAndSendToUser(Long.toString(adminId),"/notification",
+                new NotificationDTO(Constants.NOTIFICATION_TYPE.UPDATE_ROOM,new ChatRoomDTO(chatMessageDTO.getChatRoomId(), now, saved.getContent()), null)
+            );
+        }
         simpMessagingTemplate.convertAndSendToUser(String.valueOf(chatMessageDTO.getChatRoomId()),"/queue/messages",saved);
     }
 
@@ -143,8 +150,12 @@ public class ChatController {
         ChatRoomUserDTO chatRoomUserDTO = chatRoomUserService.findOneByUserIdClient(userId).orElse(null);
         ChatRoomDTO chatRoomDTO;
         if(chatRoomUserDTO == null){
-            chatRoomDTO = chatRoomService.createRoom(userId, 1L);
-            simpMessagingTemplate.convertAndSendToUser("1","/notification", new NotificationDTO(chatRoomDTO));
+            List<UserDTO> userDTOList = userService.queryUserList(new UserSearchDTO("ROLE_ADMIN"));
+            List<Long> listAdminId = userDTOList.stream().map(UserDTO::getId).collect(Collectors.toList());
+            chatRoomDTO = chatRoomService.createRoom(userId, listAdminId);
+            for(Long adminId : listAdminId) {
+                simpMessagingTemplate.convertAndSendToUser(Long.toString(adminId), "/notification", new NotificationDTO(chatRoomDTO));
+            }
         } else {
             chatRoomDTO = chatRoomService.findOne(chatRoomUserDTO.getChatRoomId()).orElseThrow(() -> new BadRequestAlertException("Somethingwrong", "Somethingwrong", "Somethingwrong"));
         }
@@ -175,5 +186,20 @@ public class ChatController {
         }
 
         return DEFAULT_ERROR_MESSAGE;
+    }
+
+    @PostMapping("/api/pick-mod/{roomId}")
+    public ResponseEntity<?> pickMod(@PathVariable()Long roomId, @RequestBody UserDTO userDTO) throws NotFoundException {
+        if(userDTO.getId() == null){
+            throw new BadRequestAlertException("Id null", "Id null", "Id null");
+        }
+        ChatRoomDTO chatRoomDTO = chatRoomService.findOne(roomId).orElseThrow(() -> new NotFoundException("Chat Room not found: " + roomId));
+        List<ChatRoomUserDTO> listAdmin = chatRoomUserService.findAllByRoomIdNotClient(roomId);
+        List<Long> listId = listAdmin.stream().map(ChatRoomUserDTO::getUserId).collect(Collectors.toList());
+        if(!listId.contains(userDTO.getId())){
+            chatRoomUserService.save(new ChatRoomUserDTO(roomId, userDTO.getId(), 0));
+            simpMessagingTemplate.convertAndSendToUser(Long.toString(userDTO.getId()), "/notification", new NotificationDTO(chatRoomDTO));
+        }
+        return ResponseEntity.ok().body(new ResponseMessageDTO(1, "Thành công"));
     }
 }

@@ -142,10 +142,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     @Override
-    public ChatRoomDTO createRoom(Long userId, Long userAdminId) {
+    public ChatRoomDTO createRoom(Long userId, List<Long> userAdminIds) {
         ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom());
 //        chatRoomUserRepository.save(new ChatRoomUser(chatRoom.getId(),userId, 1));
-        chatRoomUserRepository.saveAll(Arrays.asList(new ChatRoomUser(chatRoom.getId(),userId, 1), new ChatRoomUser(chatRoom.getId(),userAdminId, 0)));
+        List<ChatRoomUser> listUser = new ArrayList<>();
+        listUser.add(new ChatRoomUser(chatRoom.getId(),userId, 1));
+        for(Long adminId : userAdminIds){
+            listUser.add(new ChatRoomUser(chatRoom.getId(),adminId, 0));
+        }
+        chatRoomUserRepository.saveAll(listUser);
         return chatRoomMapper.toDto(chatRoom);
     }
 }

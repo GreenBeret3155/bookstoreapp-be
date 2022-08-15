@@ -29,9 +29,9 @@ public class CustOrderDTO implements Serializable {
         this.orderInfoId = orderInfoId;
         this.userId = userId;
         this.paymentType = paymentType;
-        this.state = Constants.ORDER_STATE.DANG_THANH_TOAN;
+        this.state = Constants.DANG_THANH_TOAN;
         if(paymentType == Constants.PAYMENT_TYPE.COD){
-            this.state = Constants.ORDER_STATE.DANG_XU_LY;
+            this.state = Constants.DANG_XU_LY;
         }
         Long v = 0l;
         for(int i = 0; i < orderItemDTOS.size(); i++){

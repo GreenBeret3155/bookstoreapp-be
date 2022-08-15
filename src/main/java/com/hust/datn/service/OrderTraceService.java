@@ -31,6 +31,10 @@ public interface OrderTraceService {
 
     List<OrderTraceDTO> findAllByOrderId(Long orderId);
 
+    OrderTraceDTO findLastByOrderId(Long orderId);
+
+    OrderTraceDTO findLastByOrderIdAndState(Long orderId, Integer state);
+
 
     /**
      * Get the "id" orderTrace.

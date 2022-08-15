@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing {@link com.hust.datn.domain.ChatRoomUser}.
@@ -41,6 +42,13 @@ public class ChatRoomUserResource {
 
     public ChatRoomUserResource(ChatRoomUserService chatRoomUserService) {
         this.chatRoomUserService = chatRoomUserService;
+    }
+
+    @GetMapping("/room/adm-list/{roomId}")
+    public ResponseEntity<List<Long>> getAdminIdsInRoom(@PathVariable()Long roomId) {
+        log.debug("REST request to get a page of ChatRoomUsers");
+        List<Long> listIds = chatRoomUserService.findAllByRoomIdNotClient(roomId).stream().map(ChatRoomUserDTO::getUserId).collect(Collectors.toList());
+        return ResponseEntity.ok().body(listIds);
     }
 
     /**

@@ -5,6 +5,7 @@ import com.hust.datn.service.dto.ChatRoomUserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -44,6 +45,8 @@ public interface ChatRoomUserService {
      * @return the entity.
      */
     Optional<ChatRoomUserDTO> findOneByUserIdClient(Long id);
+
+    List<ChatRoomUserDTO> findAllByRoomIdNotClient(Long roomId);
 
     /**
      * Delete the "id" chatRoomUser.

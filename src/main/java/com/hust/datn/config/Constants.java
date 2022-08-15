@@ -1,8 +1,6 @@
 package com.hust.datn.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Application constants.
@@ -49,6 +47,11 @@ public final class Constants {
         String CANCEL_SUCCESS = "Hủy đơn hàng thành công";
         String CANCEL_FAILED = "Hủy đơn hàng thất bại";
         String CANCEL_REQUEST_SUCCESS = "Tạo yêu cầu hủy đơn hàng thành công";
+        String HANDLE_ORDER_SUCCESS = "Đơn hàng được xác nhận, đang xử lý giao hàng";
+        String PROCESSING_ORDER = "Đơn hàng đang được xử lý";
+        String DELIVERY_ORDER_PROCESS = "Đơn hàng đang được giao";
+        String DELIVERY_ORDER_SUCCESS = "Đơn hàng đã được giao";
+        String REFUND_SUCCESS = "Đơn hàng được hoàn tiền thành công";
     }
 
     public interface ORDER_STATE {
@@ -62,8 +65,26 @@ public final class Constants {
         Integer YEU_CAU_HUY = 7;
     }
 
+    public static final int DANG_THANH_TOAN = 0;
+    public static final int DANG_XU_LY = 1;
+    public static final int DA_THANH_TOAN = 2;
+    public static final int DA_HUY = 3;
+    public static final int DA_XAC_NHAN = 4;
+    public static final int DANG_GIAO_HANG = 5;
+    public static final int DA_GIAO_HANG = 6;
+    public static final int YEU_CAU_HUY = 7;
+
+    public static final Map<Integer, List<Integer>> NEXT_STATE  = new HashMap<Integer, List<Integer>>() {{
+        put(Constants.ORDER_STATE.DA_THANH_TOAN, new ArrayList<>(Arrays.asList(Constants.ORDER_STATE.DA_XAC_NHAN, Constants.ORDER_STATE.DA_HUY)));
+        put(Constants.ORDER_STATE.DANG_XU_LY, new ArrayList<>(Arrays.asList(Constants.ORDER_STATE.DA_XAC_NHAN, Constants.ORDER_STATE.DA_HUY)));
+        put(Constants.ORDER_STATE.DA_XAC_NHAN, new ArrayList<>(Arrays.asList(Constants.ORDER_STATE.DANG_GIAO_HANG, Constants.ORDER_STATE.DA_HUY)));
+        put(Constants.ORDER_STATE.DANG_GIAO_HANG, new ArrayList<>(Arrays.asList(Constants.ORDER_STATE.DA_GIAO_HANG, Constants.ORDER_STATE.DA_HUY)));
+        put(Constants.ORDER_STATE.YEU_CAU_HUY, new ArrayList<>(Arrays.asList(Constants.ORDER_STATE.DA_HUY, Constants.ORDER_STATE.DANG_XU_LY)));
+    }};
+
     public interface ORDER_STATE_CLIENT_CONDITION {
-        List<Integer> DUOC_HUY = new ArrayList<>(Arrays.asList(ORDER_STATE.DANG_THANH_TOAN, ORDER_STATE.DANG_XU_LY, ORDER_STATE.DA_THANH_TOAN));
+        List<Integer> DUOC_HUY = new ArrayList<>(Arrays.asList(ORDER_STATE.DANG_THANH_TOAN, ORDER_STATE.DANG_XU_LY));
+        List<Integer> YEU_CAU_HUY = new ArrayList<>(Arrays.asList(ORDER_STATE.DA_THANH_TOAN));
     }
 
 

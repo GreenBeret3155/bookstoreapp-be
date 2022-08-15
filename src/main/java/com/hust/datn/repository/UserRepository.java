@@ -59,4 +59,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
         "and (:keyword is null or lower(a.email) like %:keyword% ESCAPE '&' or lower(a.login) like %:keyword% ESCAPE '&')",
     nativeQuery = true)
     Page<User> queryUser(@Param("authorities") String authorities, @Param("keyword") String keyword, Pageable pageable);
+
+    @Query(value = "select a.* from jhi_user a \n" +
+        "where 1=1 \n" +
+        "and (:authorities is null or a.id in (select user_id from jhi_user_authority b where b.authority_name = :authorities))\n" +
+        "and (:keyword is null or lower(a.email) like %:keyword% ESCAPE '&' or lower(a.login) like %:keyword% ESCAPE '&')",
+        nativeQuery = true)
+    List<User> queryUserList(@Param("authorities") String authorities, @Param("keyword") String keyword);
 }

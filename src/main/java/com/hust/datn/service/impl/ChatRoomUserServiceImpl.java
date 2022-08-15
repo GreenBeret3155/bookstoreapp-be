@@ -13,7 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing {@link ChatRoomUser}.
@@ -63,6 +65,14 @@ public class ChatRoomUserServiceImpl implements ChatRoomUserService {
         log.debug("Request to get ChatRoomUser by userid : {}", userId);
         return chatRoomUserRepository.findByUserIdAndIsClient(userId, 1)
             .map(chatRoomUserMapper::toDto);
+    }
+
+    @Override
+    public List<ChatRoomUserDTO> findAllByRoomIdNotClient(Long roomId) {
+        return chatRoomUserRepository.findAllByIsClientAndChatRoomId(0, roomId)
+            .stream()
+            .map(chatRoomUserMapper::toDto)
+            .collect(Collectors.toList());
     }
 
     @Override

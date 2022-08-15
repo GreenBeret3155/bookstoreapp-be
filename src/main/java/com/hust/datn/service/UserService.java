@@ -351,6 +351,10 @@ public class UserService {
         return userRepository.queryUser(userSearchDTO.getAuthorities(), userSearchDTO.getKeyword(), pageable).map(e -> new UserDTO(e));
     }
 
+    public List<UserDTO> queryUserList(UserSearchDTO userSearchDTO){
+        return userRepository.queryUserList(userSearchDTO.getAuthorities(), userSearchDTO.getKeyword()).stream().map(e -> new UserDTO(e)).collect(Collectors.toList());
+    }
+
     public Optional<UserDTO> updateStatusUser(UserDTO userDTO) {
         return Optional.of(userRepository
                 .findById(userDTO.getId()))

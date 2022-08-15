@@ -56,6 +56,16 @@ public class OrderTraceServiceImpl implements OrderTraceService {
         return orderTraceRepository.findAllByOrderIdOrderByUpdateTimeDesc(orderId).stream().map(orderTraceMapper::toDto).collect(Collectors.toList());
     }
 
+    @Override
+    public OrderTraceDTO findLastByOrderId(Long orderId) {
+        return orderTraceMapper.toDto(orderTraceRepository.findFirstByOrderIdOrderByUpdateTimeDesc(orderId));
+    }
+
+    @Override
+    public OrderTraceDTO findLastByOrderIdAndState(Long orderId, Integer state) {
+        return orderTraceMapper.toDto(orderTraceRepository.findFirstByOrderIdAndStateOrderByUpdateTimeDesc(orderId, state));
+    }
+
 
     @Override
     @Transactional(readOnly = true)

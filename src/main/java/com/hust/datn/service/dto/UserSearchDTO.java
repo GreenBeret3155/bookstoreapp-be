@@ -21,4 +21,11 @@ public class UserSearchDTO {
     public void setKeyword(String keyword) {
         this.keyword = keyword;
     }
+
+    public UserSearchDTO() {
+    }
+
+    public UserSearchDTO(String authorities) {
+        this.authorities = authorities;
+    }
 }

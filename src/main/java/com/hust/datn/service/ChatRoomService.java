@@ -53,5 +53,5 @@ public interface ChatRoomService {
      * @param userId
      * @return
      */
-    ChatRoomDTO createRoom(Long userId, Long userAdminId);
+    ChatRoomDTO createRoom(Long userId, List<Long> userAdminIds);
 }
