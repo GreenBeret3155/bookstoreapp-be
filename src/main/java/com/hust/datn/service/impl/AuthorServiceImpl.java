@@ -5,6 +5,7 @@ import com.hust.datn.domain.Author;
 import com.hust.datn.repository.AuthorRepository;
 import com.hust.datn.service.dto.AuthorDTO;
 import com.hust.datn.service.mapper.AuthorMapper;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +43,29 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    public AuthorDTO saveName(AuthorDTO authorDTO) throws NotFoundException {
+        Author author = authorMapper.toEntity(authorDTO);
+        if(authorDTO.getId() == null){
+            author = authorRepository.save(author);
+        } else {
+            Author author1 = authorRepository.findById(authorDTO.getId()).orElseThrow(() -> new NotFoundException("Author" + authorDTO.getId()));
+            author1.setName(author.getName());
+            author = authorRepository.save(author1);
+        }
+        return authorMapper.toDto(author);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<AuthorDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Authors");
         return authorRepository.findAll(pageable)
             .map(authorMapper::toDto);
+    }
+
+    @Override
+    public Page<AuthorDTO> query(String q, Pageable pageable) {
+        return authorRepository.query(q, pageable).map(authorMapper::toDto);
     }
 
 

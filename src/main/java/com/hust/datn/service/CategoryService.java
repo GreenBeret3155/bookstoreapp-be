@@ -1,7 +1,9 @@
 package com.hust.datn.service;
 
+import com.hust.datn.service.dto.AuthorDTO;
 import com.hust.datn.service.dto.CategoryDTO;
 
+import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,6 +23,8 @@ public interface CategoryService {
      */
     CategoryDTO save(CategoryDTO categoryDTO);
 
+    CategoryDTO saveName(CategoryDTO categoryDTO) throws NotFoundException;
+
     /**
      * Get all the categories.
      *
@@ -31,6 +35,7 @@ public interface CategoryService {
 
     List<CategoryDTO> findAllLeaf();
 
+    Page<CategoryDTO> query(String q, Pageable pageable);
 
     /**
      * Get the "id" category.

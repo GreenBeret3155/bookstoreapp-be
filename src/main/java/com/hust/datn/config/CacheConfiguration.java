@@ -62,6 +62,8 @@ public class CacheConfiguration {
             createCache(cm, com.hust.datn.domain.SysModule.class.getName());
             createCache(cm, com.hust.datn.domain.SysRoleModule.class.getName());
             createCache(cm, com.hust.datn.domain.OrderTrace.class.getName());
+            createCache(cm, com.hust.datn.domain.ProductAmount.class.getName());
+            createCache(cm, com.hust.datn.domain.ProductAmountTrace.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

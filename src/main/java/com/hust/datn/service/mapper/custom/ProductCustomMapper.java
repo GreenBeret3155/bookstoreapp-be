@@ -4,8 +4,10 @@ import com.hust.datn.domain.Category;
 import com.hust.datn.domain.Product;
 import com.hust.datn.service.AuthorService;
 import com.hust.datn.service.CategoryService;
+import com.hust.datn.service.ProductAmountService;
 import com.hust.datn.service.dto.AuthorDTO;
 import com.hust.datn.service.dto.CategoryDTO;
+import com.hust.datn.service.dto.ProductAmountDTO;
 import com.hust.datn.service.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ public class ProductCustomMapper {
     AuthorService authorService;
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    ProductAmountService productAmountService;
 
     public List<ProductDTO> productsToProductDTOS(List<Product> products) {
         return products.stream()
@@ -43,7 +47,9 @@ public class ProductCustomMapper {
             categoryDTO = categoryService.findOne(product.getCategoryId()).orElse(null);
         }
 
-        return new ProductDTO(product, authorDTO, categoryDTO);
+        ProductAmountDTO productAmountDTO = productAmountService.findOne(product.getId()).orElse(null);
+
+        return new ProductDTO(product, authorDTO, categoryDTO, productAmountDTO);
     }
 
     public List<Product> productDTOSToProducts(List<ProductDTO> productDTOS) {
@@ -56,6 +62,6 @@ public class ProductCustomMapper {
     public Product productDTOToProduct(ProductDTO productDTO) {
         return new Product(productDTO,
             productDTO.getAuthor() != null ? productDTO.getAuthor().getId() : null,
-            productDTO.getAuthor() != null ? productDTO.getCategory().getId() : null);
+            productDTO.getCategory() != null ? productDTO.getCategory().getId() : null);
     }
 }

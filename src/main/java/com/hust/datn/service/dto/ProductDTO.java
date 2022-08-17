@@ -34,6 +34,7 @@ public class ProductDTO implements Serializable {
     private Integer status;
     private Instant updateTime;
     private String updateUser;
+    private Integer remainAmount;
 
     public Long getId() {
         return id;
@@ -219,6 +220,14 @@ public class ProductDTO implements Serializable {
         this.updateUser = updateUser;
     }
 
+    public Integer getRemainAmount() {
+        return remainAmount;
+    }
+
+    public void setRemainAmount(Integer remainAmount) {
+        this.remainAmount = remainAmount;
+    }
+
     public ProductDTO() {
     }
 
@@ -244,6 +253,35 @@ public class ProductDTO implements Serializable {
         this.status = product.getStatus();
         this.updateTime = product.getUpdateTime();
         this.updateUser = product.getUpdateUser();
+    }
+
+    public ProductDTO(Product product, AuthorDTO author, CategoryDTO category, ProductAmountDTO productAmountDTO) {
+        this.id = product.getId();
+        this.sourceId = product.getSourceId();
+        this.name = product.getName();
+        this.shortDescription = product.getShortDescription();
+        this.price = product.getPrice();
+        this.originalPrice = product.getOriginalPrice();
+        this.discount = product.getDiscount();
+        this.discountRate = product.getDiscountRate();
+        this.ratingAverage = product.getRatingAverage();
+        this.favouriteCount = product.getFavouriteCount();
+        this.thumbnailUrl = product.getThumbnailUrl();
+        this.inventoryStatus = product.getInventoryStatus();
+        this.inventoryType = product.getInventoryType();
+        this.productsetGroupName = product.getProductsetGroupName();
+        this.allTimeQuantitySold = product.getAllTimeQuantitySold();
+        this.description = product.getDescription();
+        this.author = author;
+        this.category = category;
+        this.status = product.getStatus();
+        this.updateTime = product.getUpdateTime();
+        this.updateUser = product.getUpdateUser();
+        if(productAmountDTO != null && productAmountDTO.getAvailable() != 0 ){
+            this.remainAmount = productAmountDTO.getAmount();
+        } else {
+            this.remainAmount = 0;
+        }
     }
 
     @Override

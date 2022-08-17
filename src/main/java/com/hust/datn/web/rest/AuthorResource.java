@@ -1,12 +1,14 @@
 package com.hust.datn.web.rest;
 
 import com.hust.datn.service.AuthorService;
+import com.hust.datn.service.dto.ProductDTO;
 import com.hust.datn.web.rest.errors.BadRequestAlertException;
 import com.hust.datn.service.dto.AuthorDTO;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,15 +54,9 @@ public class AuthorResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/authors")
-    public ResponseEntity<AuthorDTO> createAuthor(@RequestBody AuthorDTO authorDTO) throws URISyntaxException {
-        log.debug("REST request to save Author : {}", authorDTO);
-        if (authorDTO.getId() != null) {
-            throw new BadRequestAlertException("A new author cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        AuthorDTO result = authorService.save(authorDTO);
-        return ResponseEntity.created(new URI("/api/authors/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+    public ResponseEntity<AuthorDTO> saveAuthor(@RequestBody AuthorDTO authorDTO) throws URISyntaxException, NotFoundException {
+        AuthorDTO result = authorService.saveName(authorDTO);
+        return ResponseEntity.ok().body(result);
     }
 
     /**
@@ -94,6 +90,15 @@ public class AuthorResource {
     public ResponseEntity<List<AuthorDTO>> getAllAuthors(@PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
         log.debug("REST request to get a page of Authors");
         Page<AuthorDTO> page = authorService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/get-authors")
+    public ResponseEntity<List<AuthorDTO>> queryAuthors(@RequestParam(required = false) String q,
+                                                         @PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
+        log.debug("REST request to get a page of Authors");
+        Page<AuthorDTO> page = authorService.query(q, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

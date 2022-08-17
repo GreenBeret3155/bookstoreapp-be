@@ -7,6 +7,7 @@ import com.hust.datn.service.dto.CategoryDTO;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,15 +53,9 @@ public class CategoryResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/categories")
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) throws URISyntaxException {
-        log.debug("REST request to save Category : {}", categoryDTO);
-        if (categoryDTO.getId() != null) {
-            throw new BadRequestAlertException("A new category cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        CategoryDTO result = categoryService.save(categoryDTO);
-        return ResponseEntity.created(new URI("/api/categories/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) throws URISyntaxException, NotFoundException {
+        CategoryDTO result = categoryService.saveName(categoryDTO);
+        return ResponseEntity.ok().body(result);
     }
 
     /**
@@ -94,6 +89,15 @@ public class CategoryResource {
     public ResponseEntity<List<CategoryDTO>> getAllCategories(@PageableDefault(value = Integer.MAX_VALUE)Pageable pageable) {
         log.debug("REST request to get a page of Categories");
         Page<CategoryDTO> page = categoryService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/get-categories")
+    public ResponseEntity<List<CategoryDTO>> getAllCategories(@RequestParam(required = false) String q,
+                                                              @PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
+        log.debug("REST request to get a page of Categories");
+        Page<CategoryDTO> page = categoryService.query(q, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

@@ -2,6 +2,8 @@ package com.hust.datn.service;
 
 import com.hust.datn.service.dto.AuthorDTO;
 
+import com.hust.datn.service.dto.ProductDTO;
+import javassist.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,6 +22,8 @@ public interface AuthorService {
      */
     AuthorDTO save(AuthorDTO authorDTO);
 
+    AuthorDTO saveName(AuthorDTO authorDTO) throws NotFoundException;
+
     /**
      * Get all the authors.
      *
@@ -27,6 +31,8 @@ public interface AuthorService {
      * @return the list of entities.
      */
     Page<AuthorDTO> findAll(Pageable pageable);
+
+    Page<AuthorDTO> query(String q, Pageable pageable);
 
 
     /**

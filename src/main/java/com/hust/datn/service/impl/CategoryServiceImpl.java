@@ -1,10 +1,13 @@
 package com.hust.datn.service.impl;
 
+import com.hust.datn.domain.Author;
 import com.hust.datn.service.CategoryService;
 import com.hust.datn.domain.Category;
 import com.hust.datn.repository.CategoryRepository;
+import com.hust.datn.service.dto.AuthorDTO;
 import com.hust.datn.service.dto.CategoryDTO;
 import com.hust.datn.service.mapper.CategoryMapper;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +47,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public CategoryDTO saveName(CategoryDTO categoryDTO) throws NotFoundException {
+        Category category = categoryMapper.toEntity(categoryDTO);
+        if(categoryDTO.getId() == null){
+            category = categoryRepository.save(category);
+        } else {
+            Category category1 = categoryRepository.findById(categoryDTO.getId()).orElseThrow(() -> new NotFoundException("Author" + categoryDTO.getId()));
+            category1.setName(category.getName());
+            category = categoryRepository.save(category1);
+        }
+        return categoryMapper.toDto(category);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<CategoryDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Categories");
@@ -54,6 +70,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDTO> findAllLeaf() {
         return categoryRepository.findAllByIsLeaf(1).stream().map(categoryMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<CategoryDTO> query(String q, Pageable pageable) {
+        return categoryRepository.query(q, pageable).map(categoryMapper::toDto);
     }
 
 

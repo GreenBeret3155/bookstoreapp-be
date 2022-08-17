@@ -65,6 +65,12 @@ public class CustOrderResource {
     private UserRepository userRepository;
 
     @Autowired
+    private ProductAmountService productAmountService;
+
+    @Autowired
+    private ProductAmountTraceService productAmountTraceService;
+
+    @Autowired
     private MomoService momoService;
 
     Gson gson = new Gson();
@@ -97,6 +103,7 @@ public class CustOrderResource {
     @PostMapping("/order")
     public ResponseEntity<?> createOrder(@RequestBody CustOrderDetailDTO custOrderDetailDTO) throws Exception {
         Long userId = SecurityUtils.getCurrentUserId(userRepository).orElseThrow(() -> new BadRequestAlertException("User not exists", ENTITY_NAME, "idnull"));
+        String userLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
         CartDTO cartDTO = cartService.findOneByUserId(userId).orElseThrow(() -> new BadRequestAlertException("null", ENTITY_NAME, "null"));
         if (custOrderDetailDTO.getInfo() == null ||
             custOrderDetailDTO.getInfo().getId() == null ||
@@ -105,11 +112,18 @@ public class CustOrderResource {
             custOrderDetailDTO.getItems().size() == 0 ) {
             throw new BadRequestAlertException("null", ENTITY_NAME, "null");
         }
+        //check amount
+        List<ProductAmountChangeDTO> productAmountChangeDTOList = custOrderDetailDTO.getItems().stream().map(e -> new ProductAmountChangeDTO(e)).collect(Collectors.toList());
+        if(!productAmountService.checkAmount(productAmountChangeDTOList)){
+            return ResponseEntity.badRequest().body(new ResponseMessageDTO(0, "Số lượng hàng trong kho không đủ hoặc sản phẩm đã bị ngưng bán"));
+        }
+
         OrderInfoDTO orderInfoDTO = orderInfoService.findOne(custOrderDetailDTO.getInfo().getId()).orElseThrow(() -> new BadRequestAlertException("null",ENTITY_NAME,"null"));
 
         CustOrderDTO result = custOrderService.save(new CustOrderDTO(custOrderDetailDTO.getInfo().getId(), userId, custOrderDetailDTO.getOrder().getPaymentType(), custOrderDetailDTO.getItems()));
         List<OrderItemDTO> orderItemDTOS = custOrderDetailDTO.getItems().stream().map(e -> new OrderItemDTO(e, result.getId())).collect(Collectors.toList());
         orderItemDTOS = orderItemService.saveAll(orderItemDTOS);
+        productAmountTraceService.saveAll(custOrderDetailDTO.getItems().stream().map(e -> new ProductAmountTraceDTO(result.getId(), userLogin, e)).collect(Collectors.toList()));
         custOrderDetailDTO.setInfo(orderInfoDTO);
         custOrderDetailDTO.setItems(orderItemDTOS);
         custOrderDetailDTO.setOrder(result);
